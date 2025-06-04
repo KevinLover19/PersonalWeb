@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="page_title">麦青春的麦田</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" xintegrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+    <link rel="stylesheet" href="index.css">
+    <style>
+        /* 毛玻璃效果 */
+        .glass-effect { background-color: rgba(31, 41, 55, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(55, 65, 81, 0.5); border-radius: 0.5rem; transition: background-color 0.3s ease, border-color 0.3s ease; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        /* 下拉菜单链接颜色 */
+        #lang-dropdown a, #blog-nav-dropdown a { color: var(--text-secondary-dark, #9ca3af); }
+        #lang-dropdown a:hover, #blog-nav-dropdown a:hover { background-color: rgba(55, 65, 81, 0.6); color: var(--text-primary-dark, #e5e7eb); }
+        /* 移动端下拉菜单背景 */
+        #mobile-lang-dropdown, #mobile-blog-dropdown { background-color: rgba(31, 41, 55, 0.9); }
+        #mobile-lang-dropdown a, #mobile-blog-dropdown a { color: var(--accent-link, #a7c7e7); }
+        #mobile-lang-dropdown a:hover, #mobile-blog-dropdown a:hover { background-color: #374151; color: var(--star-bright, #FFF); }
+        
+        .cta-button {
+            min-width: 150px; 
+            text-align: center;
+        }
+        .nav-link-button { /* 用于导航栏中模拟链接样式的按钮 */
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: var(--accent-link);
+            cursor: pointer;
+            position: relative;
+            transition: color 0.4s var(--ease-out-smooth);
+        }
+        .nav-link-button:hover {
+            color: var(--star-bright);
+        }
+        .nav-link-button::after { /* 下划线效果 */
+            content: ''; position: absolute; width: 0; height: 2px;
+            bottom: -5px; left: 50%; transform: translateX(-50%);
+            background-color: var(--glow-color);
+            transition: width 0.4s var(--ease-out-smooth), box-shadow 0.4s var(--ease-out-smooth);
+            box-shadow: 0 0 8px var(--glow-color);
+        }
+        .nav-link-button:hover::after, .nav-link-button.active::after { width: 100%; }
+
+    </style>
+</head>
+<body class="text-gray-200">
+
+    <div id="tsparticles"></div>
+
+    <nav id="navbar" class="fixed w-full z-20 top-0 transition duration-300 ease-in-out">
+         <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#home" class="text-2xl font-bold text-white hover:text-gray-300 transition duration-300" data-translate-key="site_logo_name">麦青春的麦田</a>
+
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="#home" class="nav-link active" data-translate-key="nav_home">主页</a>
+                <a href="about.html" class="nav-link" data-translate-key="nav_about">关于我</a> 
+                <div class="relative">
+                    <button id="blog-nav-toggle" aria-label="Toggle blog menu" class="nav-link-button flex items-center">
+                        <span data-translate-key="nav_blog">博客</span> <i class="fas fa-chevron-down text-xs ml-1"></i>
+                    </button>
+                    <div id="blog-nav-dropdown" class="absolute left-0 mt-2 w-40 rounded-md shadow-lg border hidden glass-effect !py-1 z-30">
+                        <a href="blog.html" class="block px-4 py-2 text-sm transition-colors" data-translate-key="nav_blog_enter">进入博客</a>
+                        <a href="sub-station.html" target="_blank" rel="noopener noreferrer" class="block px-4 py-2 text-sm transition-colors" data-translate-key="nav_subsite_enter">前往分站</a>
+                    </div>
+                </div>
+                <a href="games.html" class="nav-link" data-translate-key="nav_games">小游戏</a>
+                <div class="relative">
+                    <button id="lang-toggle" aria-label="Change language" class="nav-link-button flex items-center">
+                        <i class="fas fa-language text-xl mr-1"></i> <span id="current-lang" class="text-sm font-medium">中文</span> <i class="fas fa-chevron-down text-xs ml-1"></i>
+                    </button>
+                    <div id="lang-dropdown" class="absolute right-0 mt-2 w-32 rounded-md shadow-lg border hidden glass-effect !py-1 z-30">
+                        <a href="#" class="block px-4 py-2 text-sm transition-colors" data-lang="zh-CN">简体中文</a>
+                        <a href="#" class="block px-4 py-2 text-sm transition-colors" data-lang="zh-TW">繁體中文</a>
+                        <a href="#" class="block px-4 py-2 text-sm transition-colors" data-lang="en">English</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="md:hidden flex items-center">
+                <button id="mobile-menu-button" aria-label="Toggle mobile menu" aria-expanded="false" class="text-gray-200 focus:outline-none p-2 rounded hover:bg-gray-700 transition ml-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </div>
+
+        <div id="mobile-menu" class="md:hidden hidden bg-opacity-95 backdrop-blur-sm" style="background-color: rgba(11, 15, 25, 0.9);">
+            <a href="#home" class="block py-3 px-4 text-sm text-[var(--accent-link)] hover:text-[var(--star-bright)] hover:bg-gray-700 transition duration-150" data-translate-key="nav_home">主页</a>
+            <a href="about.html" class="block py-3 px-4 text-sm text-[var(--accent-link)] hover:text-[var(--star-bright)] hover:bg-gray-700 transition duration-150" data-translate-key="nav_about">关于我</a>
+            <div class="px-4">
+                <button id="mobile-blog-toggle" aria-label="Toggle blog menu" class="w-full flex justify-between items-center py-3 text-sm text-[var(--accent-link)] hover:text-[var(--star-bright)] hover:bg-gray-700 transition duration-150">
+                    <span data-translate-key="nav_blog">博客</span>
+                    <i class="fas fa-chevron-down text-xs"></i>
+                </button>
+                <div id="mobile-blog-dropdown" class="mt-1 space-y-1 hidden rounded bg-gray-800/80 p-1">
+                    <a href="blog.html" class="block px-3 py-1.5 text-sm rounded hover:bg-gray-700 transition-colors w-full text-left" data-translate-key="nav_blog_enter">进入博客</a>
+                    <a href="sub-station.html" target="_blank" rel="noopener noreferrer" class="block px-3 py-1.5 text-sm rounded hover:bg-gray-700 transition-colors w-full text-left" data-translate-key="nav_subsite_enter">前往分站</a>
+                </div>
+            </div>
+            <a href="games.html" class="block py-3 px-4 text-sm text-[var(--accent-link)] hover:text-[var(--star-bright)] hover:bg-gray-700 transition duration-150" data-translate-key="nav_games">小游戏</a>
+            <div class="px-4 pt-3 pb-2 border-t border-gray-700">
+                <button id="mobile-lang-toggle" aria-label="Change language" class="w-full flex justify-between items-center p-2 rounded hover:bg-gray-700 transition-colors text-gray-300 hover:text-white">
+                    <span class="flex items-center"> <i class="fas fa-language text-lg mr-2"></i> <span class="text-sm" data-translate-key="language_select">选择语言</span> </span>
+                    <span id="mobile-current-lang" class="text-sm font-medium">中文</span>
+                 </button>
+                <div id="mobile-lang-dropdown" class="mt-2 space-y-1 hidden rounded bg-gray-800/80 p-1">
+                    <a href="#" class="block px-3 py-1.5 text-sm rounded hover:bg-gray-700 transition-colors w-full text-left" data-lang="zh-CN">简体中文</a>
+                    <a href="#" class="block px-3 py-1.5 text-sm rounded hover:bg-gray-700 transition-colors w-full text-left" data-lang="zh-TW">繁體中文</a>
+                    <a href="#" class="block px-3 py-1.5 text-sm rounded hover:bg-gray-700 transition-colors w-full text-left" data-lang="en">English</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header id="home" class="min-h-screen flex items-center justify-center text-center relative overflow-hidden px-4 z-10">
+         <div id="hero-content" class="relative z-1 transition-transform duration-300 ease-out">
+            <img data-src="images/avatar.jpg"
+                 id="avatar-img"
+                 alt="MaxCaulfield 的头像"
+                 class="w-32 h-32 md:w-40 md:h-40 mx-auto rounded-full border-4 border-[var(--accent-button)] shadow-lg mb-6 reveal">
+             <div class="typewriter inline-block mb-3">
+                <h1 class="text-4xl md:text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-300 via-sky-300 to-slate-300" data-translate-key="hero_greeting">
+                    你好，我是 MaxCaulfield
+                </h1>
+            </div>
+            <p class="text-lg md:text-2xl text-gray-300 mb-8 fade-in-up" data-translate-key="hero_subtitle_new">欢迎来到麦青春的麦田</p>
+            
+            <div class="flex flex-col sm:flex-row justify-center items-center space-y-4 sm:space-y-0 sm:space-x-4 mb-6">
+                 <a href="blog.html" class="cta-button inline-block text-white font-semibold py-3 px-8 rounded-full border-2 transition duration-300 fade-in-up" style="animation-delay: 4s;" data-translate-key="hero_blog_button">
+                    进入博客
+                </a>
+                <a href="sub-station.html" target="_blank" rel="noopener noreferrer" class="cta-button inline-block text-white font-semibold py-3 px-8 rounded-full border-2 transition duration-300 fade-in-up" style="animation-delay: 4.1s;" data-translate-key="hero_subsite_button">
+                    前往分站
+                </a>
+            </div>
+
+            </div>
+    </header>
+
+    <section id="photos" class="py-20 md:py-32 bg-[var(--sky-dark)] bg-opacity-80 backdrop-blur-sm relative z-10">
+          <div class="container mx-auto px-6">
+            <h2 class="text-3xl md:text-4xl font-bold text-center mb-16 reveal text-[var(--star-soft)]" data-translate-key="photos_title">照片展览</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+                <div class="photo-item reveal"> <img data-src="images/photo1.jpg" alt="照片展览 1" class="gallery-photo w-full h-64 md:h-72 object-cover cursor-pointer"> </div>
+                <div class="photo-item reveal" style="transition-delay: 0.1s;"> <img data-src="images/photo2.jpg" alt="照片展览 2" class="gallery-photo w-full h-64 md:h-72 object-cover cursor-pointer"> </div>
+                <div class="photo-item reveal" style="transition-delay: 0.2s;"> <img data-src="images/photo3.jpg" alt="照片展览 3" class="gallery-photo w-full h-64 md:h-72 object-cover cursor-pointer"> </div>
+                <div class="photo-item reveal" style="transition-delay: 0.05s;"> <img data-src="images/photo4.jpg" alt="照片展览 4" class="gallery-photo w-full h-64 md:h-72 object-cover cursor-pointer"> </div>
+                <div class="photo-item reveal" style="transition-delay: 0.15s;"> <img data-src="images/photo5.jpg" alt="照片展览 5" class="gallery-photo w-full h-64 md:h-72 object-cover cursor-pointer"> </div>
+                <div class="photo-item reveal" style="transition-delay: 0.25s;"> <img data-src="images/photo6.jpg" alt="照片展览 6" class="gallery-photo w-full h-64 md:h-72 object-cover cursor-pointer"> </div>
+            </div>
+            <p class="text-center text-sm text-gray-400 mt-8 reveal" style="transition-delay: 0.3s;" data-translate-key="photos_caption">
+                其实是主包丢AI创作出来的卡哇伊二刺螈
+            </p>
+        </div>
+    </section>
+
+    <!-- 
+    <section id="contact" class="py-20 md:py-32 bg-gradient-to-br from-[var(--sky-mid)] to-[var(--sky-purple)] relative z-10">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 reveal text-[var(--star-soft)]" data-translate-key="contact_title_alt">保持联系</h2>
+            <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-2xl mx-auto reveal" data-translate-key="contact_intro_alt">
+                如果你有任何问题、建议，或者只是想打个招呼，随时欢迎通过以下方式联系我。期待与你的交流！
+            </p>
+            <div class="contact-icon-group flex justify-center space-x-6 md:space-x-8 reveal">
+                <a href="mailto:maxcaulfield@duck.com" class="contact-icon group" title="Email" data-translate-key="contact_email_tooltip">
+                    <i class="fas fa-envelope text-3xl md:text-4xl text-gray-400 group-hover:text-[var(--star-bright)] transition-colors duration-300"></i>
+                    <span class="block text-xs mt-2 text-gray-500 group-hover:text-gray-300 transition-colors duration-300" data-translate-key="contact_email_label">邮箱</span>
+                </a>
+                <a href="https://github.com/AngelToBeFound" target="_blank" rel="noopener noreferrer" class="contact-icon group" title="GitHub" data-translate-key="contact_github_tooltip">
+                    <i class="fab fa-github text-3xl md:text-4xl text-gray-400 group-hover:text-[var(--star-bright)] transition-colors duration-300"></i>
+                    <span class="block text-xs mt-2 text-gray-500 group-hover:text-gray-300 transition-colors duration-300">GitHub</span>
+                </a>
+                 <a href="https://space.bilibili.com/3461575335962295" target="_blank" rel="noopener noreferrer" class="contact-icon group" title="Bilibili" data-translate-key="contact_bilibili_tooltip">
+                    <i class="fab fa-bilibili text-3xl md:text-4xl text-gray-400 group-hover:text-[var(--star-bright)] transition-colors duration-300"></i>
+                    <span class="block text-xs mt-2 text-gray-500 group-hover:text-gray-300 transition-colors duration-300">B站</span>
+                </a>
+            </div>
+        </div>
+    </section>
+    -->
+    <footer class="bg-black text-gray-600 py-8 text-center relative z-10">
+         <div class="container mx-auto px-6">
+            <p data-translate-key="footer_copyright_new">&copy; 2025 麦青春的麦田.</p> 
+            <p><span data-translate-key="footer_text">用 ❤️ 和代码构建.</span></p>
+            <p class="text-xs mt-1" data-translate-key="footer_icp">京ICP备2025127934号</p>
+        </div>
+    </footer>
+
+    <div id="lightbox-overlay" class="fixed inset-0 bg-black bg-opacity-85 hidden items-center justify-center z-50 transition-opacity duration-300 ease-in-out cursor-pointer">
+        <span id="lightbox-close" class="absolute top-5 right-8 text-white text-4xl font-bold cursor-pointer hover:text-gray-400 transition-colors">&times;</span>
+        <img id="lightbox-img" src="" alt="Enlarged photo" class="max-w-[90%] max-h-[90%] object-contain rounded-lg shadow-xl cursor-default">
+    </div>
+
+    <script>
+        // --- Navigation Bar & Active Link Logic ---
+        const nav = document.getElementById('navbar');
+        window.addEventListener('scroll', () => {
+            nav.classList.toggle('scrolled', window.scrollY > 50);
+        });
+
+        const sections = document.querySelectorAll('section[id], header[id]');
+        const navLinks = document.querySelectorAll('#navbar .hidden.md\\:flex > a.nav-link');
+        const mobileNavLinks = document.querySelectorAll('#mobile-menu > a'); 
+
+        function updateActiveLink() {
+             let current = 'home'; 
+             sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight > 0 ? section.clientHeight : window.innerHeight;
+                if (pageYOffset >= sectionTop - 150) { 
+                    current = section.getAttribute('id');
+                }
+            });
+             navLinks.forEach(link => {
+                 const href = link.getAttribute('href');
+                 if (href && href.startsWith('#')) { 
+                     link.classList.toggle('active', href.substring(1) === current);
+                 } else {
+                     link.classList.remove('active'); 
+                 }
+             });
+             if (mobileNavLinks.length > 0) {
+                 mobileNavLinks.forEach(link => {
+                     const href = link.getAttribute('href');
+                     if (href && href.startsWith('#')) {
+                         const linkTarget = href.substring(1);
+                         link.classList.toggle('bg-gray-700', linkTarget === current); 
+                         link.classList.toggle('text-[var(--star-bright)]', linkTarget === current); 
+                     } else { 
+                          link.classList.remove('bg-gray-700', 'text-[var(--star-bright)]');
+                     }
+                 });
+             }
+         }
+        window.addEventListener('scroll', updateActiveLink);
+
+        // --- tsParticles Initialization ---
+        if (typeof tsParticles !== 'undefined') {
+            tsParticles.load("tsparticles", {
+                fpsLimit: 60,
+                particles: { number: { value: 35, density: { enable: true, area: 800 } }, color: { value: ["#FFFFFF", "#ADD8E6", "#F0F8FF"] }, shape: { type: ["circle", "star"] }, opacity: { value: { min: 0.1, max: 0.4 }, animation: { enable: true, speed: 1, minimumValue: 0.1, sync: false } }, size: { value: { min: 1, max: 3 } }, links: { color: "#ffffff", distance: 150, enable: true, opacity: 0.15, width: 1 }, collisions: { enable: false }, move: { direction: "none", enable: true, outModes: { default: "out" }, random: true, speed: 0.4, straight: false } },
+                interactivity: { events: { onHover: { enable: true, mode: "repulse" }, onClick: { enable: true, mode: "push" }, resize: true }, modes: { repulse: { distance: 80, duration: 0.4 }, push: { quantity: 3 } } },
+                emitters: { direction: "none", rate: { quantity: 1, delay: 0.05 }, size: { width: 100, height: 100, mode: "percent" }, position: { x: 50, y: 50 }, particles: { shape: { type: "star" }, size: { value: { min: 1, max: 3 } }, color: { value: ["#FFFFFF", "#86efac", "#67e8f9", "#a7c7e7"] }, opacity: { value: { min: 0.3, max: 0.8 }, animation: { enable: true, speed: 0.9, minimumValue: 0.3 } }, links: { enable: false }, move: { speed: 0.8, decay: 0.05, direction: "none", straight: false, random: true, outModes: { default: "destroy" } }, life: { duration: { min: 5, max: 10 }, count: 1 } } },
+                detectRetina: true, background: { opacity: 0 }
+            }).then(container => { console.log("tsParticles loaded"); }).catch(error => { console.error("Error loading tsParticles:", error); });
+        } else { console.warn("tsParticles library not found."); }
+
+        // --- Scroll Reveal Animation ---
+        const revealElements = document.querySelectorAll('.reveal');
+        if ('IntersectionObserver' in window) {
+            const revealObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, {
+                threshold: 0.1 
+            });
+            revealElements.forEach(el => {
+                revealObserver.observe(el);
+            });
+        } else {
+            console.warn("IntersectionObserver not supported. Reveal animations will not work dynamically.");
+            revealElements.forEach(el => el.classList.add('visible'));
+        }
+
+        // --- Hero Content Parallax Effect ---
+        const heroContent = document.getElementById('hero-content');
+        if (heroContent) {
+            window.addEventListener('scroll', () => {
+                const scrollY = window.pageYOffset;
+                heroContent.style.transform = `translateY(${scrollY * 0.1}px)`;
+            });
+        }
+
+        // --- Mobile Menu Toggle ---
+        const mobileMenuButton = document.getElementById('mobile-menu-button');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLangToggle = document.getElementById('mobile-lang-toggle');
+        const mobileLangDropdown = document.getElementById('mobile-lang-dropdown');
+        const mobileBlogToggle = document.getElementById('mobile-blog-toggle');
+        const mobileBlogDropdown = document.getElementById('mobile-blog-dropdown');
+
+        if (mobileMenuButton && mobileMenu) {
+             mobileMenuButton.addEventListener('click', () => {
+                const isHidden = mobileMenu.classList.toggle('hidden');
+                mobileMenuButton.setAttribute('aria-expanded', String(!isHidden)); 
+                if (isHidden) { 
+                    if (mobileLangDropdown) mobileLangDropdown.classList.add('hidden');
+                    if (mobileBlogDropdown) mobileBlogDropdown.classList.add('hidden');
+                }
+            });
+            mobileMenu.querySelectorAll('a:not(#mobile-lang-dropdown a):not(#mobile-blog-dropdown a)').forEach(link => {
+                 if (!link.parentElement.id?.includes('dropdown')) { 
+                    link.addEventListener('click', () => {
+                        mobileMenu.classList.add('hidden');
+                        mobileMenuButton.setAttribute('aria-expanded', 'false');
+                        if (mobileLangDropdown) mobileLangDropdown.classList.add('hidden');
+                        if (mobileBlogDropdown) mobileBlogDropdown.classList.add('hidden');
+                    });
+                }
+            });
+             if (mobileLangToggle && mobileLangDropdown) {
+                 mobileLangToggle.addEventListener('click', (e) => {
+                     e.stopPropagation(); 
+                     mobileLangDropdown.classList.toggle('hidden');
+                     if (mobileBlogDropdown) mobileBlogDropdown.classList.add('hidden'); 
+                 });
+             }
+             if (mobileBlogToggle && mobileBlogDropdown) {
+                 mobileBlogToggle.addEventListener('click', (e) => {
+                     e.stopPropagation();
+                     mobileBlogDropdown.classList.toggle('hidden');
+                     if (mobileLangDropdown) mobileLangDropdown.classList.add('hidden'); 
+                 });
+             }
+         }
+
+        // --- Lightbox Logic ---
+        const lightboxOverlay = document.getElementById('lightbox-overlay');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const lightboxClose = document.getElementById('lightbox-close');
+        const photoItems = document.querySelectorAll('.photo-item img.gallery-photo'); 
+
+        if (lightboxOverlay && lightboxImg && lightboxClose && photoItems.length > 0) {
+            photoItems.forEach(item => {
+                item.addEventListener('load', () => {
+                     if (window.getComputedStyle(item).display !== 'none') {
+                        item.addEventListener('click', () => {
+                            lightboxImg.src = item.src; 
+                            lightboxOverlay.classList.remove('hidden');
+                            lightboxOverlay.classList.add('flex'); 
+                        });
+                     }
+                });
+                 if (item.complete && item.naturalWidth > 0 && window.getComputedStyle(item).display !== 'none') {
+                      item.addEventListener('click', () => {
+                            lightboxImg.src = item.src;
+                            lightboxOverlay.classList.remove('hidden');
+                            lightboxOverlay.classList.add('flex');
+                      });
+                 }
+            });
+            lightboxOverlay.addEventListener('click', (e) => {
+                if (e.target === lightboxOverlay || e.target === lightboxClose) {
+                    lightboxOverlay.classList.add('hidden');
+                    lightboxOverlay.classList.remove('flex');
+                    lightboxImg.src = ""; 
+                }
+            });
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && !lightboxOverlay.classList.contains('hidden')) {
+                     lightboxOverlay.classList.add('hidden');
+                     lightboxOverlay.classList.remove('flex');
+                     lightboxImg.src = "";
+                }
+            });
+        }
+
+        // --- Language and Blog Dropdown Switching Logic ---
+        const translations = {
+            'en': {
+                'page_title': "Max's Wheat Field", 
+                'site_logo_name': "Max's Wheat Field",
+                'nav_home': "Home", 
+                'nav_blog': "Blog", 
+                'nav_blog_enter': "Enter Blog", 
+                'nav_subsite_enter': "Go to Sub-site", 
+                'nav_games': "Games", 
+                'nav_about': "About Me", 
+                'language_select': "Select Language", 
+                'hero_greeting': "Hello, I'm MaxCaulfield", 
+                'hero_subtitle_new': "Welcome to Max's Wheat Field", 
+                'hero_blog_button': "Enter Blog", 
+                'hero_subsite_button': "Go to Sub-site", 
+                'photos_title': "Photo Gallery", 
+                'photos_caption': "Actually cute anime characters created by AI", 
+                'contact_title_alt': "Keep in Touch", 
+                'contact_intro_alt': "If you have any questions, suggestions, or just want to say hello, feel free to contact me through the following ways. Looking forward to connecting with you!",
+                'contact_email_label': "Email", 'contact_github_tooltip': "GitHub", 'contact_bilibili_tooltip': "Bilibili",
+                'footer_copyright_new': "&copy; 2025 Max's Wheat Field.",
+                'footer_text': "Built with ❤️ and code.", 
+                'footer_icp': "Jing ICP備2025127934号",
+                'current_lang_display': "EN"
+            },
+            'zh-CN': {
+                'page_title': "麦青春的麦田", 
+                'site_logo_name': "麦青春的麦田",
+                'nav_home': "主页", 
+                'nav_blog': "博客", 
+                'nav_blog_enter': "进入博客", 
+                'nav_subsite_enter': "前往分站",
+                'nav_games': "小游戏", 
+                'nav_about': "关于我", 
+                'language_select': "选择语言", 
+                'hero_greeting': "你好，我是 MaxCaulfield", 
+                'hero_subtitle_new': "欢迎来到麦青春的麦田", 
+                'hero_blog_button': "进入博客", 
+                'hero_subsite_button': "前往分站", 
+                'photos_title': "照片展览", 
+                'photos_caption': "其实是主包丢AI创作出来的卡哇伊二刺螈", 
+                'contact_title_alt': "保持联系",
+                'contact_intro_alt': "如果你有任何问题、建议，或者只是想打个招呼，随时欢迎通过以下方式联系我。期待与你的交流！",
+                'contact_email_label': "邮箱", 'contact_github_tooltip': "GitHub", 'contact_bilibili_tooltip': "B站",
+                'footer_copyright_new': "&copy; 2025 麦青春的麦田.",
+                'footer_text': "用 ❤️ 和代码构建.", 
+                'footer_icp': "京ICP备2025127934号",
+                'current_lang_display': "简"
+            },
+            'zh-TW': {
+                'page_title': "麥青春的麥田", 
+                'site_logo_name': "麥青春的麥田",
+                'nav_home': "主頁", 
+                'nav_blog': "部落格", 
+                'nav_blog_enter': "進入部落格", 
+                'nav_subsite_enter': "前往分站",
+                'nav_games': "小遊戲", 
+                'nav_about': "關於我", 
+                'language_select': "選擇語言", 
+                'hero_greeting': "你好，我是 MaxCaulfield", 
+                'hero_subtitle_new': "歡迎來到麥青春的麥田", 
+                'hero_blog_button': "進入部落格", 
+                'hero_subsite_button': "前往分站", 
+                'photos_title': "照片展覽", 
+                'photos_caption': "其實是主包丟AI創作出來的卡哇伊二次元", 
+                'contact_title_alt': "保持聯繫",
+                'contact_intro_alt': "如果你有任何問題、建議，或者只是想打個招呼，隨時歡迎透過以下方式聯繫我。期待與你的交流！",
+                'contact_email_label': "郵箱", 'contact_github_tooltip': "GitHub", 'contact_bilibili_tooltip': "B站",
+                'footer_copyright_new': "&copy; 2025 麥青春的麥田.",
+                'footer_text': "用 ❤️ 和程式碼構建.", 
+                'footer_icp': "京ICP備2025127934號",
+                'current_lang_display': "繁"
+            }
+        };
+
+        // Ensure these are declared globally if they are accessed by multiple functions
+        const langToggleDesktop = document.getElementById('lang-toggle');
+        const langDropdownDesktop = document.getElementById('lang-dropdown');
+        const currentLangSpanDesktop = document.getElementById('current-lang');
+        const langLinksDesktop = langDropdownDesktop ? langDropdownDesktop.querySelectorAll('a[data-lang]') : [];
+        
+        const blogNavToggleDesktop = document.getElementById('blog-nav-toggle');
+        const blogNavDropdownDesktop = document.getElementById('blog-nav-dropdown');
+        // const blogNavLinksDesktop = blogNavDropdownDesktop ? blogNavDropdownDesktop.querySelectorAll('a') : []; // Not strictly needed for closing logic if handled by generic dropdown closer
+
+        const mobileCurrentLangSpan = document.getElementById('mobile-current-lang');
+        const langLinksMobile = mobileLangDropdown ? mobileLangDropdown.querySelectorAll('a[data-lang]') : [];
+        // const blogLinksMobile = mobileBlogDropdown ? mobileBlogDropdown.querySelectorAll('a') : []; // Not strictly needed for closing logic
+
+        let currentLang = localStorage.getItem('language') || 'zh-CN';
+
+        function applyTranslations(lang) {
+            console.log("--- applyTranslations called with lang:", lang, "---"); 
+            if (!translations[lang]) {
+                console.error(`Translations object for language '${lang}' not found.`); 
+                return;
+            }
+            document.documentElement.lang = lang.startsWith('zh') ? lang : lang.split('-')[0]; 
+            const elements = document.querySelectorAll('[data-translate-key]');
+            console.log(`Found ${elements.length} elements with data-translate-key.`); 
+
+            elements.forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                const translationText = translations[lang][key];
+                if (translationText !== undefined) {
+                    if (el.tagName === 'TITLE') { document.title = translationText; }
+                    else if (el.tagName === 'INPUT' && el.placeholder) { el.placeholder = translationText; }
+                    else if (el.title) { el.title = translationText; } 
+                    else if (el.tagName === 'IMG' && el.alt) { el.alt = translationText; } 
+                    else { el.innerHTML = translationText; } 
+                } else {
+                    console.warn(`Translation key "${key}" not found for language "${lang}" in element:`, el); 
+                }
+            });
+
+            const displayLang = translations[lang]['current_lang_display'] || lang.split('-')[0].toUpperCase();
+            
+            console.log(`Attempting to update language display. Target lang: ${lang}, Display text: "${displayLang}"`);
+
+            if (currentLangSpanDesktop) {
+                console.log(`Desktop span found. Current text: "${currentLangSpanDesktop.textContent}". Setting to: "${displayLang}"`);
+                currentLangSpanDesktop.textContent = displayLang;
+                console.log(`Desktop span after update: "${currentLangSpanDesktop.textContent}"`);
+            } else {
+                console.warn("Desktop current language span (current-lang) not found for update.");
+            }
+            
+            if (mobileCurrentLangSpan) {
+                console.log(`Mobile span found. Current text: "${mobileCurrentLangSpan.textContent}". Setting to: "${displayLang}"`);
+                mobileCurrentLangSpan.textContent = displayLang;
+                console.log(`Mobile span after update: "${mobileCurrentLangSpan.textContent}"`);
+            } else {
+                 // console.warn("Mobile current language span (mobile-current-lang) not found for update.");
+            }
+
+            const allLangLinks = document.querySelectorAll('#lang-dropdown a[data-lang], #mobile-lang-dropdown a[data-lang]');
+            allLangLinks.forEach(link => {
+                const linkLang = link.getAttribute('data-lang');
+                link.classList.toggle('font-bold', linkLang === lang); 
+                link.classList.toggle('text-[var(--star-bright)]', linkLang === lang); 
+            });
+            console.log("--- applyTranslations finished ---"); 
+        }
+
+        function setupDropdown(toggleButton, dropdownMenu, linksForLanguageChange = [], otherDropdownsToClose = []) {
+            if (!toggleButton || !dropdownMenu) {
+                return; 
+            }
+            toggleButton.addEventListener('click', (e) => {
+                e.stopPropagation(); 
+                const isHidden = dropdownMenu.classList.toggle('hidden');
+                if (toggleButton.hasAttribute('aria-expanded')) {
+                    toggleButton.setAttribute('aria-expanded', String(!isHidden));
+                }
+                otherDropdownsToClose.forEach(otherDropdown => {
+                    if (otherDropdown && otherDropdown !== dropdownMenu && !otherDropdown.classList.contains('hidden')) {
+                        otherDropdown.classList.add('hidden');
+                        const otherToggle = document.querySelector(`[aria-controls="${otherDropdown.id}"], [id="${otherDropdown.id.replace('-dropdown', '-toggle')}"]`);
+                        if (otherToggle && otherToggle.hasAttribute('aria-expanded')) {
+                            otherToggle.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                });
+            });
+
+            // Event listeners for links within this specific dropdown (e.g., language links)
+            const internalLinks = dropdownMenu.querySelectorAll('a');
+            internalLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    if (link.hasAttribute('data-lang')) { // Specifically handle language change links
+                        e.preventDefault();
+                        const selectedLang = link.getAttribute('data-lang');
+                        console.log(`Language link clicked: ${selectedLang}, currentLang before update: ${currentLang}`);
+                        if (selectedLang !== currentLang) {
+                            currentLang = selectedLang; 
+                            localStorage.setItem('language', currentLang);
+                            console.log(`currentLang updated to: ${currentLang}, calling applyTranslations.`);
+                            applyTranslations(currentLang); 
+                        } else {
+                            console.log(`Selected language ${selectedLang} is same as currentLang ${currentLang}. No update needed.`);
+                        }
+                    }
+                    // Always close this dropdown after a link inside it is clicked
+                    dropdownMenu.classList.add('hidden');
+                    if (toggleButton.hasAttribute('aria-expanded')) {
+                         toggleButton.setAttribute('aria-expanded', 'false');
+                    }
+                    // If this is a mobile dropdown link, also close the main mobile menu
+                    if (mobileMenu && !mobileMenu.classList.contains('hidden') && dropdownMenu.closest('#mobile-menu')) {
+                         mobileMenu.classList.add('hidden');
+                         if (mobileMenuButton) mobileMenuButton.setAttribute('aria-expanded', 'false');
+                    }
+                });
+            });
+        }
+        
+        document.addEventListener('click', (e) => {
+            const allDropdowns = [
+                {toggle: langToggleDesktop, menu: langDropdownDesktop},
+                {toggle: blogNavToggleDesktop, menu: blogNavDropdownDesktop},
+                {toggle: mobileLangToggle, menu: mobileLangDropdown},
+                {toggle: mobileBlogToggle, menu: mobileBlogDropdown}
+            ];
+
+            allDropdowns.forEach(item => {
+                if (item.toggle && item.menu && !item.menu.classList.contains('hidden')) {
+                    if (!item.toggle.contains(e.target) && !item.menu.contains(e.target)) {
+                        item.menu.classList.add('hidden');
+                         if (item.toggle.hasAttribute('aria-expanded')) {
+                            item.toggle.setAttribute('aria-expanded', 'false');
+                        }
+                    }
+                }
+            });
+        });
+
+
+        function loadImages() {
+            const avatarImg = document.getElementById('avatar-img');
+            if (avatarImg && avatarImg.dataset.src) {
+                avatarImg.onload = () => { avatarImg.style.display = ''; };
+                avatarImg.onerror = () => { avatarImg.alt = `无法加载: ${avatarImg.dataset.src}`; avatarImg.style.border = '1px dashed red'; };
+                avatarImg.src = avatarImg.dataset.src;
+            }
+            const galleryPhotos = document.querySelectorAll('.gallery-photo');
+             galleryPhotos.forEach((photo, index) => {
+                if (photo.dataset.src) {
+                     photo.onload = () => { photo.style.display = ''; };
+                     photo.onerror = () => { photo.alt = `无法加载: ${photo.dataset.src}`; photo.style.border = '1px dashed red'; };
+                     photo.src = photo.dataset.src;
+                 }
+             });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log("DOMContentLoaded: Initializing page..."); 
+            // Pass the actual language links to setupDropdown for specific handling
+            setupDropdown(langToggleDesktop, langDropdownDesktop, Array.from(langLinksDesktop), [blogNavDropdownDesktop]);
+            setupDropdown(blogNavToggleDesktop, blogNavDropdownDesktop, [], [langDropdownDesktop]); // Blog links are external, just close
+            
+            setupDropdown(mobileLangToggle, mobileLangDropdown, Array.from(langLinksMobile), [mobileBlogDropdown]);
+            setupDropdown(mobileBlogToggle, mobileBlogDropdown, [], [mobileLangDropdown]); // Blog links are external, just close
+            
+            console.log("DOMContentLoaded: Calling applyTranslations with currentLang:", currentLang); 
+            applyTranslations(currentLang);
+            updateActiveLink(); 
+            loadImages();
+            console.log("DOMContentLoaded: Initialization complete."); 
+        });
+    </script>
+
+</body>
+</html>

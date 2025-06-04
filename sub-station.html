@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="sub_station_page_title">麦青春分站导航 - MaxCaulfield</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" xintegrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+    <style>
+        :root {
+            --bg-primary-dark: #0b0f19; --bg-secondary-dark: rgba(17, 24, 39, 0.8); --bg-glass-dark: rgba(31, 41, 55, 0.6); --text-primary-dark: #e5e7eb; --text-secondary-dark: #9ca3af; --text-accent-dark: #a7c7e7; --border-color-dark: rgba(55, 65, 81, 0.5); --glow-color-dark: rgba(173, 216, 230, 0.7);
+            --bg-primary-light: #f9fafb; --bg-secondary-light: rgba(255, 255, 255, 0.85); --bg-glass-light: rgba(243, 244, 246, 0.7); --text-primary-light: #1f2937; --text-secondary-light: #4b5563; --text-accent-light: #3b82f6; --border-color-light: rgba(209, 213, 219, 0.6); --glow-color-light: rgba(59, 130, 246, 0.6);
+            --bg-primary: var(--bg-primary-dark); --bg-secondary: var(--bg-secondary-dark); --bg-glass: var(--bg-glass-dark); --text-primary: var(--text-primary-dark); --text-secondary: var(--text-secondary-dark); --text-accent: var(--text-accent-dark); --border-color: var(--border-color-dark); --glow-color: var(--glow-color-dark);
+            scroll-behavior: smooth;
+            --ease-out-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+        body.light-theme {
+            --bg-primary: var(--bg-primary-light); --bg-secondary: var(--bg-secondary-light); --bg-glass: var(--bg-glass-light); --text-primary: var(--text-primary-light); --text-secondary: var(--text-secondary-light); --text-accent: var(--text-accent-light); --border-color: var(--border-color-light); --glow-color: var(--glow-color-light);
+        }
+        body { background-color: var(--bg-primary); color: var(--text-primary); font-family: 'Inter', sans-serif; transition: background-color 0.3s ease, color 0.3s ease; overflow-x: hidden; position: relative; /* Removed display:flex and min-height:100vh from body directly for this page structure */ }
+        body::before { content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(-45deg, #2563eb, #7c3aed, #16a34a, #0891b2, #4f46e5, #c026d3, #2563eb); background-size: 400% 400%; animation: gradient-flow 25s linear infinite; z-index: -2; opacity: 0.7; transition: opacity 0.3s ease; }
+        body.light-theme::before { opacity: 0.4; }
+        @keyframes gradient-flow { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+        #tsparticles-substation { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; }
+        .glass-effect { background-color: var(--bg-glass); backdrop-filter: blur(10px); border: 1px solid var(--border-color); border-radius: 0.75rem; transition: all 0.3s ease; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); }
+        .text-gradient { background-image: linear-gradient(to right, var(--text-accent), var(--glow-color)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        body.light-theme .text-gradient { background-image: linear-gradient(to right, #3b82f6, #60a5fa); }
+        
+        .header-substation {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 50;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+            background-color: transparent; border-bottom: 1px solid transparent;
+        }
+        .header-substation.scrolled {
+             background-color: var(--bg-glass); backdrop-filter: blur(16px);
+             border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .main-content {
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; /* Vertically center the content within the min-height */
+            min-height: 100vh; /* Ensure main content takes full viewport height */
+            padding: 2rem; 
+            padding-top: 100px; /* Adjust based on actual header height */
+            padding-bottom: 2rem; /* Space before footer if content is very short */
+            box-sizing: border-box;
+        }
+        .footer-substation {
+            background-color: var(--bg-primary); 
+            border-top: 1px solid var(--border-color);
+            padding: 1.5rem 0; /* Reduced padding slightly */
+            width: 100%; 
+            text-align: center;
+        }
+        .station-card-grid { /* New class for the grid container */
+             display: grid;
+             grid-template-columns: repeat(1, minmax(0, 1fr)); /* Mobile: 1 column */
+             gap: 1.5rem; /* gap-6 */
+        }
+        @media (min-width: 768px) { /* md breakpoint */
+            .station-card-grid {
+                grid-template-columns: repeat(3, minmax(0, 1fr)); /* Desktop: 3 columns */
+                gap: 2rem; /* lg:gap-8 */
+            }
+        }
+
+        .station-card {
+            width: 100%; 
+            overflow: hidden; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100%; /* For equal height cards in a grid row */
+        }
+        .station-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3), 0 0 20px var(--glow-color);
+        }
+        .station-card-content { 
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 1.5rem; 
+            text-align: center; /* Ensure text content is centered */
+        }
+        .station-card-icon {
+            font-size: 2.5rem; 
+            margin-bottom: 1rem;
+            transition: transform 0.3s ease;
+        }
+        .station-card:hover .station-card-icon {
+            transform: scale(1.1) rotate(-5deg);
+        }
+        .station-card h2 {
+            font-family: 'Press Start 2P', cursive;
+            font-size: 1.125rem; 
+            line-height: 1.4;
+            margin-bottom: 0.75rem;
+        }
+        .station-card p {
+            font-size: 0.875rem; 
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex-grow: 1; /* Allow description to take space and push button down */
+        }
+        .station-button {
+            display: inline-block;
+            padding: 0.6rem 1.5rem; 
+            border-radius: 9999px; 
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-size: 0.875rem; 
+            margin-top: auto; /* Pushes button to the bottom of the flex container */
+        }
+        .station-button:hover {
+            transform: scale(1.05);
+        }
+        /* Unique accent colors for cards */
+        .card-resources .station-card-icon { color: #34d399; } 
+        .card-resources .station-button { background-color: #10b981; color: white; }
+        .card-resources .station-button:hover { background-color: #059669; }
+
+        .card-asylum .station-card-icon { color: #fbbf24; } 
+        .card-asylum .station-button { background-color: #f59e0b; color: white; }
+        .card-asylum .station-button:hover { background-color: #d97706; }
+
+        .card-technews .station-card-icon { color: #60a5fa; } 
+        .card-technews .station-button { background-color: #3b82f6; color: white; }
+        .card-technews .station-button:hover { background-color: #2563eb; }
+
+    </style>
+</head>
+<body class="dark-theme">
+    <div id="tsparticles-substation"></div>
+
+    <header id="header-substation" class="header-substation py-3">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="text-xl font-bold hover:opacity-80 transition-opacity">
+                <span class="text-gradient" data-translate-key="sub_station_hub_title">麦青春分站导航</span>
+            </a>
+            <div class="flex items-center space-x-3">
+                <button id="theme-toggle" aria-label="Toggle theme" class="p-2 rounded-full hover:bg-[var(--bg-glass)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                    <i class="fas fa-sun text-lg"></i> <i class="fas fa-moon text-lg hidden"></i>
+                </button>
+                <div class="relative">
+                    <button id="lang-toggle" aria-label="Change language" class="p-2 rounded-full hover:bg-[var(--bg-glass)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center">
+                        <i class="fas fa-language text-xl mr-1"></i>
+                        <span id="current-lang" class="text-sm font-medium">中文</span>
+                        <i class="fas fa-chevron-down text-xs ml-1"></i>
+                    </button>
+                    <div id="lang-dropdown" class="absolute right-0 mt-2 w-32 bg-[var(--bg-secondary)] rounded-md shadow-lg border border-[var(--border-color)] hidden glass-effect !py-1 z-50">
+                        <a href="#" class="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)] transition-colors" data-lang="zh-CN">简体中文</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)] transition-colors" data-lang="zh-TW">繁體中文</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)] transition-colors" data-lang="en">English</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <h1 class="text-4xl md:text-5xl font-bold mb-12 text-gradient" data-translate-key="explore_more_sites">探索麦青春的更多站点</h1>
+
+        <div class="station-card-grid w-full max-w-6xl mx-auto"> 
+            <div class="station-card glass-effect card-resources">
+                <div class="station-card-content">
+                    <div> 
+                        <i class="fas fa-archive station-card-icon"></i>
+                        <h2 data-translate-key="resource_library_title">麦青春的资源库</h2>
+                        <p class="text-[var(--text-secondary)]" data-translate-key="resource_library_desc">汇集各类学习资料、工具和实用资源的共享空间。</p>
+                    </div>
+                    <a href="http://maxcaulfield.online" target="_blank" rel="noopener noreferrer" class="station-button" data-translate-key="button_go_to_resources">前往资源库</a>
+                </div>
+            </div>
+
+            <div class="station-card glass-effect card-asylum">
+                <div class="station-card-content">
+                    <div>
+                        <i class="fas fa-brain station-card-icon"></i>
+                        <h2 data-translate-key="emotional_rescue_title">麦青春的情绪救助站</h2>
+                        <p class="text-[var(--text-secondary)]" data-translate-key="emotional_rescue_desc">一个可以安放思绪、疗愈心灵的角落，分享感悟与思考。</p>
+                    </div>
+                    <a href="http://maxcaulfield.icu" target="_blank" rel="noopener noreferrer" class="station-button" data-translate-key="button_enter_rescue_station">进入救助站</a>
+                </div>
+            </div>
+
+            <div class="station-card glass-effect card-technews">
+                <div class="station-card-content">
+                    <div>
+                        <i class="fas fa-microchip station-card-icon"></i>
+                        <h2 data-translate-key="technews_title">麦青春的科技资讯</h2>
+                        <p class="text-[var(--text-secondary)]" data-translate-key="technews_desc">追踪最新科技动态，分享前沿技术见解与行业观察。</p>
+                    </div>
+                    <a href="http://maxcaulfield.xyz" target="_blank" rel="noopener noreferrer" class="station-button" data-translate-key="button_browse_technews">浏览科技资讯</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-substation py-4 text-center text-sm text-[var(--text-secondary)]">
+        <p>&copy; <span id="current-year">2025</span> <span data-translate-key="sub_station_hub_title_footer">麦青春分站导航</span></p>
+         <p class="text-xs mt-1" data-translate-key="footer_icp">京ICP备2025127934号</p>
+    </footer>
+
+    <script>
+        // --- Translations ---
+        const translations = {
+            'en': {
+                'sub_station_page_title': "Max's Sub-station Hub - MaxCaulfield",
+                'sub_station_hub_title': "Max's Sub-station Hub",
+                'explore_more_sites': "Explore More of Max's Sites",
+                'resource_library_title': "Max's Resource Library",
+                'resource_library_desc': "A shared space pooling various learning materials, tools, and practical resources.",
+                'button_go_to_resources': "Go to Resources",
+                'emotional_rescue_title': "Max's Emotional Rescue Station",
+                'emotional_rescue_desc': "A corner to settle thoughts and heal the soul, sharing insights and reflections.",
+                'button_enter_rescue_station': "Enter Rescue Station",
+                'technews_title': "Max's Tech News",
+                'technews_desc': "Tracking the latest tech trends, sharing cutting-edge insights and industry observations.",
+                'button_browse_technews': "Browse Tech News",
+                'current_lang_display': "EN",
+                'sub_station_hub_title_footer': "Max's Sub-station Hub",
+                'footer_icp': "Jing ICP備2025127934号"
+            },
+            'zh-CN': {
+                'sub_station_page_title': "麦青春分站导航 - MaxCaulfield",
+                'sub_station_hub_title': "麦青春分站导航",
+                'explore_more_sites': "探索麦青春的更多站点",
+                'resource_library_title': "麦青春的资源库",
+                'resource_library_desc': "汇集各类学习资料、工具和实用资源的共享空间。",
+                'button_go_to_resources': "前往资源库",
+                'emotional_rescue_title': "麦青春的情绪救助站",
+                'emotional_rescue_desc': "一个可以安放思绪、疗愈心灵的角落，分享感悟与思考。",
+                'button_enter_rescue_station': "进入救助站",
+                'technews_title': "麦青春的科技资讯",
+                'technews_desc': "追踪最新科技动态，分享前沿技术见解与行业观察。",
+                'button_browse_technews': "浏览科技资讯",
+                'current_lang_display': "简",
+                'sub_station_hub_title_footer': "麦青春分站导航",
+                'footer_icp': "京ICP备2025127934号"
+            },
+            'zh-TW': {
+                'sub_station_page_title': "麥青春分站導航 - MaxCaulfield",
+                'sub_station_hub_title': "麥青春分站導航",
+                'explore_more_sites': "探索麥青春的更多站點",
+                'resource_library_title': "麥青春的資源庫",
+                'resource_library_desc': "彙集各類學習資料、工具和實用資源的共享空間。",
+                'button_go_to_resources': "前往資源庫",
+                'emotional_rescue_title': "麥青春的情緒救助站",
+                'emotional_rescue_desc': "一個可以安放思緒、療癒心靈的角落，分享感悟與思考。",
+                'button_enter_rescue_station': "進入救助站",
+                'technews_title': "麥青春的科技資訊",
+                'technews_desc': "追蹤最新科技動態，分享前沿技術見解與行業觀察。",
+                'button_browse_technews': "瀏覽科技資訊",
+                'current_lang_display': "繁",
+                'sub_station_hub_title_footer': "麥青春分站導航",
+                'footer_icp': "京ICP備2025127934号"
+            }
+        };
+
+        // --- Global DOM Elements & State ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const langToggle = document.getElementById('lang-toggle');
+        const langDropdown = document.getElementById('lang-dropdown');
+        const currentLangSpan = document.getElementById('current-lang');
+        const headerSubstation = document.getElementById('header-substation'); 
+        
+        let currentLang = localStorage.getItem('language') || 'zh-CN';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // --- Theme and Language Functions ---
+        function applyCurrentTheme() {
+            const sunIcon = themeToggle ? themeToggle.querySelector('.fa-sun') : null;
+            const moonIcon = themeToggle ? themeToggle.querySelector('.fa-moon') : null;
+            if (currentTheme === 'light') {
+                document.body.classList.add('light-theme'); document.body.classList.remove('dark-theme');
+                if (sunIcon) sunIcon.classList.add('hidden'); if (moonIcon) moonIcon.classList.remove('hidden');
+            } else {
+                document.body.classList.add('dark-theme'); document.body.classList.remove('light-theme');
+                if (sunIcon) sunIcon.classList.remove('hidden'); if (moonIcon) moonIcon.classList.add('hidden');
+            }
+        }
+
+        function applyCurrentTranslations() {
+            if (!translations[currentLang]) { console.warn(`Translations for language '${currentLang}' not found.`); return; }
+            document.documentElement.lang = currentLang.startsWith('zh') ? currentLang : currentLang.split('-')[0];
+            const elements = document.querySelectorAll('[data-translate-key]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                if (translations[currentLang][key] !== undefined) {
+                    if (el.tagName === 'TITLE') { document.title = translations[currentLang][key]; }
+                    else { el.innerHTML = translations[currentLang][key]; }
+                }
+            });
+            if (currentLangSpan) {
+               currentLangSpan.textContent = (translations[currentLang] && translations[currentLang]['current_lang_display']) ? translations[currentLang]['current_lang_display'] : currentLang.split('-')[0].toUpperCase();
+            }
+            if (langDropdown) {
+                const langLinks = langDropdown.querySelectorAll('a[data-lang]');
+                langLinks.forEach(link => {
+                    link.classList.toggle('font-bold', link.getAttribute('data-lang') === currentLang);
+                    link.classList.toggle('text-[var(--text-accent)]', link.getAttribute('data-lang') === currentLang);
+                });
+            }
+        }
+        
+        function setupLangSwitcher(toggleButton, dropdownMenu) { 
+            if (!toggleButton || !dropdownMenu) return;
+            const links = dropdownMenu.querySelectorAll('a[data-lang]');
+            if (!links || links.length === 0) return;
+            toggleButton.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); });
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const selectedLang = link.getAttribute('data-lang');
+                    if (selectedLang !== currentLang) {
+                        currentLang = selectedLang;
+                        localStorage.setItem('language', currentLang);
+                        applyCurrentTranslations();
+                    }
+                    dropdownMenu.classList.add('hidden');
+                });
+            });
+        }
+
+        // --- Header Scroll Effect ---
+        if (headerSubstation) {
+            window.addEventListener('scroll', () => { 
+                headerSubstation.classList.toggle('scrolled', window.scrollY > 30);
+            });
+        }
+        
+        // --- DOMContentLoaded Listener ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentYearEl = document.getElementById('current-year');
+            if (currentYearEl) {
+                currentYearEl.textContent = new Date().getFullYear();
+            }
+
+            if (themeToggle) {
+                applyCurrentTheme();
+                themeToggle.addEventListener('click', () => {
+                    currentTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+                    localStorage.setItem('theme', currentTheme);
+                    applyCurrentTheme();
+                });
+            }
+
+            applyCurrentTranslations();
+            if (langToggle && langDropdown) {
+                setupLangSwitcher(langToggle, langDropdown);
+                document.addEventListener('click', (e) => { 
+                    if (!langToggle.contains(e.target) && !langDropdown.contains(e.target)) {
+                        langDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // Updated tsParticles configuration to match index.html
+            if (typeof tsParticles !== 'undefined') {
+                tsParticles.load("tsparticles-substation", {
+                    fpsLimit: 60,
+                    particles: { number: { value: 35, density: { enable: true, area: 800 } }, color: { value: ["#FFFFFF", "#ADD8E6", "#F0F8FF"] }, shape: { type: ["circle", "star"] }, opacity: { value: { min: 0.1, max: 0.4 }, animation: { enable: true, speed: 1, minimumValue: 0.1, sync: false } }, size: { value: { min: 1, max: 3 } }, links: { color: "#ffffff", distance: 150, enable: true, opacity: 0.15, width: 1 }, collisions: { enable: false }, move: { direction: "none", enable: true, outModes: { default: "out" }, random: true, speed: 0.4, straight: false } },
+                    interactivity: { events: { onHover: { enable: true, mode: "repulse" }, onClick: { enable: true, mode: "push" }, resize: true }, modes: { repulse: { distance: 80, duration: 0.4 }, push: { quantity: 3 } } },
+                    emitters: { direction: "none", rate: { quantity: 1, delay: 0.05 }, size: { width: 100, height: 100, mode: "percent" }, position: { x: 50, y: 50 }, particles: { shape: { type: "star" }, size: { value: { min: 1, max: 3 } }, color: { value: ["#FFFFFF", "#86efac", "#67e8f9", "#a7c7e7"] }, opacity: { value: { min: 0.3, max: 0.8 }, animation: { enable: true, speed: 0.9, minimumValue: 0.3 } }, links: { enable: false }, move: { speed: 0.8, decay: 0.05, direction: "none", straight: false, random: true, outModes: { default: "destroy" } }, life: { duration: { min: 5, max: 10 }, count: 1 } } },
+                    detectRetina: true, background: { opacity: 0 }
+                }).catch(error => { console.error("Error loading tsParticles for sub-station page:", error); });
+            } else { console.warn("tsParticles library not found for sub-station page."); }
+        });
+    </script>
+</body>
+</html>

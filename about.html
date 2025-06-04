@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-translate-key="about_page_title">关于我 - 麦青春的麦田</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.12.0/tsparticles.bundle.min.js"></script>
+    <style>
+        :root {
+            /* Dark Theme Variables - Aligned with index.html's starry sky theme */
+            --bg-primary-dark: #0b0f19; 
+            --bg-secondary-dark: rgba(17, 24, 39, 0.8); 
+            --bg-glass-dark: rgba(31, 41, 55, 0.7); 
+            --text-primary-dark: #e5e7eb; 
+            --text-secondary-dark: #9ca3af; 
+            --text-accent-dark: #a7c7e7; /* Main accent from index.css */
+            --border-color-dark: rgba(55, 65, 81, 0.5); 
+            --glow-color-dark: rgba(173, 216, 230, 0.7); /* Main glow from index.css */
+
+            /* Light Theme Variables - Consistent general accents */
+            --bg-primary-light: #f9fafb; 
+            --bg-secondary-light: rgba(255, 255, 255, 0.85); 
+            --bg-glass-light: rgba(229, 231, 235, 0.75); /* More neutral glass for light */
+            --text-primary-light: #1f2937; 
+            --text-secondary-light: #4b5563; 
+            --text-accent-light: #3b82f6; /* Main accent from index.css */
+            --border-color-light: rgba(209, 213, 219, 0.6); 
+            --glow-color-light: rgba(59, 130, 246, 0.6); /* Main glow from index.css */
+
+            /* Default to Dark Theme */
+            --bg-primary: var(--bg-primary-dark);
+            --bg-secondary: var(--bg-secondary-dark);
+            --bg-glass: var(--bg-glass-dark);
+            --text-primary: var(--text-primary-dark);
+            --text-secondary: var(--text-secondary-dark);
+            --text-accent: var(--text-accent-dark); 
+            --border-color: var(--border-color-dark);
+            --glow-color: var(--glow-color-dark); 
+            scroll-behavior: smooth;
+        }
+        body.light-theme {
+            --bg-primary: var(--bg-primary-light);
+            --bg-secondary: var(--bg-secondary-light);
+            --bg-glass: var(--bg-glass-light);
+            --text-primary: var(--text-primary-light);
+            --text-secondary: var(--text-secondary-light);
+            --text-accent: var(--text-accent-light);
+            --border-color: var(--border-color-light);
+            --glow-color: var(--glow-color-light);
+        }
+        body { 
+            background-color: var(--bg-primary); 
+            color: var(--text-primary); 
+            font-family: 'Inter', sans-serif; 
+            transition: background-color 0.3s ease, color 0.3s ease; 
+            overflow-x: hidden; 
+            position: relative; 
+        }
+        body::before { 
+            content: ''; 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            /* Gradient from index.css (main homepage) */
+            background: linear-gradient(-45deg, #2563eb, #7c3aed, #16a34a, #0891b2, #4f46e5, #c026d3, #2563eb); 
+            background-size: 400% 400%; 
+            animation: gradient-flow 25s linear infinite; 
+            z-index: -2; 
+            opacity: 0.7; 
+            transition: opacity 0.3s ease; 
+        }
+        body.light-theme::before { opacity: 0.4; }
+        @keyframes gradient-flow { 
+            0% { background-position: 0% 50%; } 
+            100% { background-position: 100% 50%; } 
+        }
+        #tsparticles-about { 
+            position: fixed; 
+            top: 0; left: 0; 
+            width: 100%; height: 100%; 
+            z-index: -1; 
+        }
+        .glass-effect { 
+            background-color: var(--bg-glass); 
+            backdrop-filter: blur(12px); 
+            border: 1px solid var(--border-color); 
+            border-radius: 0.75rem; 
+            transition: background-color 0.3s ease, border-color 0.3s ease; 
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15); 
+        }
+        /* Text gradient for About page - now uses main theme accents */
+        .text-gradient-about-h1 { /* Specific for H1 */
+            background-image: linear-gradient(to right, var(--text-accent-dark), var(--glow-color-dark), var(--star-soft, #ADD8E6)); 
+            -webkit-background-clip: text; 
+            background-clip: text; 
+            color: transparent;
+            padding-bottom: 0.2em; /* Add some padding if needed for better gradient visibility */
+        }
+        body.light-theme .text-gradient-about-h1 { 
+            background-image: linear-gradient(to right, var(--text-accent-light), var(--glow-color-light), var(--sky-mid, #191970)); 
+        }
+        
+        #main-header {
+            position: sticky; top: 0; z-index: 50;
+            transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        #main-header.scrolled {
+             background-color: var(--bg-glass); backdrop-filter: blur(16px);
+             border-bottom: 1px solid var(--border-color); box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        #main-header:not(.scrolled) {
+             background-color: transparent; border-bottom: 1px solid transparent;
+        }
+        .content-container {
+            max-width: 800px; 
+            margin-left: auto;
+            margin-right: auto;
+            padding: 2rem 1.5rem; 
+            text-align: center; 
+        }
+        .about-section h1, .about-section h2 {
+            /* H2 will use the general text-accent */
+            color: var(--text-accent); 
+            margin-bottom: 0.75rem; 
+        }
+        .about-section h1 { /* Main title styling */
+            font-size: 2.5rem; 
+            line-height: 1.2; 
+            font-weight: 700; 
+            text-align: center;
+            margin-bottom: 2.5rem; 
+        }
+        .about-section h2 { /* Subheadings */
+            font-size: 1.75rem; 
+            line-height: 1.4; 
+            font-weight: 600; 
+            margin-top: 2.5rem; 
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 0.75rem; 
+            display: inline-block; 
+            text-align: center; 
+        }
+        .about-section p {
+            color: var(--text-secondary);
+            line-height: 1.8; 
+            margin-bottom: 1.25rem; 
+            text-align: center; 
+        }
+        .about-section a { /* Links within paragraphs */
+            color: var(--text-accent); 
+            text-decoration: underline;
+            transition: color 0.2s ease;
+        }
+        .about-section a:hover {
+            color: var(--glow-color); 
+        }
+        .contact-icon-link { 
+            display: inline-block; 
+            color: var(--text-accent); 
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .contact-icon-link:hover {
+            color: var(--glow-color); 
+            transform: scale(1.1);
+        }
+        .contact-icon-link i {
+            font-size: 2rem; /* Increased icon size slightly for better visibility */
+        }
+        .placeholder-image {
+            display: block;
+            margin: 2rem auto; 
+            border: 2px dashed var(--border-color); 
+            background-color: rgba(167, 199, 231, 0.05); /* Using general accent for placeholder bg */
+            border-radius: 0.75rem; 
+            text-align: center;
+            padding: 2.5rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+        body.light-theme .placeholder-image {
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg-primary); }
+        ::-webkit-scrollbar-thumb { background-color: var(--text-accent); border-radius: 10px; border: 2px solid var(--bg-primary); }
+        ::-webkit-scrollbar-thumb:hover { background-color: var(--glow-color); }
+
+    </style>
+</head>
+<body class="dark-theme">
+    <div id="tsparticles-about"></div>
+
+    <header id="main-header" class="py-4 sticky top-0 z-50 mb-8 md:mb-12">
+        <div class="container mx-auto px-6 flex justify-between items-center">
+            <a href="index.html" class="text-xl md:text-2xl font-bold hover:opacity-80 transition-opacity">
+                <span class="text-gradient-about-h1" data-translate-key="site_title_about_page">麦青春的麦田</span>
+            </a>
+            <div class="flex items-center space-x-3 md:space-x-4">
+                <button id="theme-toggle" aria-label="Toggle theme" class="p-2 rounded-full hover:bg-[var(--bg-glass)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
+                    <i class="fas fa-sun text-lg"></i> <i class="fas fa-moon text-lg hidden"></i>
+                </button>
+                <div class="relative">
+                    <button id="lang-toggle" aria-label="Change language" class="p-2 rounded-full hover:bg-[var(--bg-glass)] transition-colors text-[var(--text-secondary)] hover:text-[var(--text-primary)] flex items-center">
+                        <i class="fas fa-language text-xl mr-1"></i>
+                        <span id="current-lang" class="text-sm font-medium">中文</span>
+                        <i class="fas fa-chevron-down text-xs ml-1"></i>
+                    </button>
+                    <div id="lang-dropdown" class="absolute right-0 mt-2 w-32 bg-[var(--bg-secondary)] rounded-md shadow-lg border border-[var(--border-color)] hidden glass-effect !py-1 z-30">
+                        <a href="#" class="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)] transition-colors" data-lang="zh-CN">简体中文</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)] transition-colors" data-lang="zh-TW">繁體中文</a>
+                        <a href="#" class="block px-4 py-2 text-sm text-[var(--text-secondary)] hover:bg-[var(--bg-glass)] hover:text-[var(--text-primary)] transition-colors" data-lang="en">English</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="content-container about-section glass-effect">
+        <h1 class="text-gradient-about-h1" data-translate-key="about_heading">关于麦青春</h1>
+        
+        <img src="images/avatar.jpg" alt="麦青春的头像" class="w-32 h-32 md:w-40 md:h-40 mx-auto rounded-full border-4 border-[var(--text-accent)] shadow-lg my-8" onerror="this.onerror=null; this.src='https://placehold.co/160x160/0b0f19/a7c7e7?text=Avatar'; this.alt='头像加载失败';">
+
+        <p data-translate-key="about_intro_greeting">你好，我是MaxCaulfield，你也可以叫我麦青春。</p>
+        <p data-translate-key="about_intro_welcome">欢迎来到我的个人blog——麦青春的麦田</p>
+
+        <h2 data-translate-key="about_who_am_i_title">我是谁？</h2>
+        <p data-translate-key="about_who_am_i_text">我是一个学生，嗯，起码现在还是；我还是个AI狂热教徒，力求在工业革命中站稳脚跟；我还↑是↓个Coder，虽然绝大多数工作都是Vibe Coding但是成果已经远大于我的能力了，所以，还算满意，嗯。</p>
+
+        <h2 data-translate-key="about_why_site_title">为什么要做这个个人网站？</h2>
+        <p data-translate-key="about_why_site_text">请参见<a href="post-why-website.html" data-translate-key="about_why_site_link_text">《为什么要做这个个人网站》</a>，但是注意下上服务器之后那个项目地址被用来放MaxCaulfield.xyz了，但是这只是临时性的我会改回来的。</p>
+
+        <h2 data-translate-key="about_dream_title">梦想是什么？</h2>
+        <p data-translate-key="about_dream_text">为了良知！...*啪。我错了，能闪耀自己的光芒就可以了。</p>
+
+        <h2 data-translate-key="about_why_max_title">为什么叫MaxCaulfield？</h2>
+        <p data-translate-key="about_why_max_text">MaxCaulfield这个名字来源于游戏<a href="https://store.steampowered.com/agecheck/app/319630/" target="_blank" rel="noopener noreferrer" data-translate-key="about_lis_link_text">《Life is Strange 奇异人生》</a>，是个非常非常好的游戏，自己觉得也好听就拿来用了，没想到直接成了我的代名词。</p>
+
+        <h2 data-translate-key="about_why_mqc_title">为什么叫麦青春？</h2>
+        <p data-translate-key="about_why_mqc_text">因为MaxCaulfield的Max，麦克斯，然后在寒假参加比赛的时候写公众号首次用了麦青春很青春这个名字，觉得超级好听且美丽，就一直沿用了。</p>
+
+        <h2 data-translate-key="about_why_blog_name_title">为什么博客叫麦青春的麦田？</h2>
+        <p data-translate-key="about_why_blog_name_text">请看↓</p>
+        <img src="images/wheatfield-concept.jpg" alt="麦田意境图" class="placeholder-image w-full max-w-lg" onerror="this.onerror=null; this.src='https://placehold.co/600x300/0b0f19/a7c7e7?text=麦田意境图+(Image+Missing)'; this.alt='麦田意境图加载失败';">
+
+        <h2 data-translate-key="about_signature_title">有没有个人签名？</h2>
+        <p data-translate-key="about_signature_text">那肯定有啊而且超好看的捏</p>
+        <img src="images/signature-personal.png" alt="个人签名" class="placeholder-image w-full max-w-md" onerror="this.onerror=null; this.src='https://placehold.co/400x200/0b0f19/a7c7e7?text=个人签名+(Image+Missing)'; this.alt='个人签名加载失败';">
+
+        <h2 data-translate-key="about_contact_title">怎么联系你？</h2>
+        <p data-translate-key="about_contact_text">你可以通过QQ邮箱和BiliBili联系主包。</p>
+        <p class="text-sm text-[var(--text-secondary)] mb-2" data-translate-key="about_contact_email_prompt">你可以点击图标进行联系</p>
+        <p class="my-4 flex justify-center space-x-6"> 
+            <a href="mailto:nanci_wanziyu520@qq.com" class="contact-icon-link" title="nanci_wanziyu520@qq.com">
+                <i class="fas fa-envelope"></i>
+            </a>
+            <a href="https://space.bilibili.com/588640283" target="_blank" rel="noopener noreferrer" class="contact-icon-link" title="Bilibili ( @Max_CaulfieldOfficial )">
+                <i class="fab fa-bilibili"></i>
+            </a>
+        </p>
+
+        <p class="mt-12 text-center text-lg" data-translate-key="about_thank_you_text">能看到这里真是谢谢你呀，希望你能喜爱这片充满生机的麦田，愿你能在这片田地中得到你想要的内容捏。 <span class="inline-block animate-bounce">ヾ(๑╹◡╹)ﾉ"</span></p>
+        <p class="text-center text-lg" data-translate-key="about_come_back_text">别忘了多来麦田里看看啊啊啊啊啊 ~(≧▽≦)/~</p>
+
+    </main>
+
+    <footer class="mt-12 py-8 border-t border-[var(--border-color)] text-center text-[var(--text-secondary)] text-sm relative z-10">
+        <div class="container mx-auto px-6">
+             <p>© <span id="current-year">2025</span> <span data-translate-key="site_title_about_page_footer">麦青春的麦田</span>.</p>
+             <p class="text-xs mt-1" data-translate-key="footer_icp_about">京ICP备2025127934号</p> 
+             <p class="mt-1"><a href="index.html" class="hover:text-[var(--text-accent)]" data-translate-key="back_to_home">返回主页</a></p>
+        </div>
+    </footer>
+
+    <script>
+        // --- Translations (UPDATED emoticons) ---
+        const translations = {
+            'en': {
+                'about_page_title': "About Me - Max's Wheat Field",
+                'site_title_about_page': "Max's Wheat Field",
+                'site_title_about_page_footer': "Max's Wheat Field",
+                'about_heading': "About MaxCaulfield",
+                'about_intro_greeting': "Hello, I'm MaxCaulfield, you can also call me Mai Qingchun.",
+                'about_intro_welcome': "Welcome to my personal blog - Max's Wheat Field",
+                'about_who_am_i_title': "Who am I?",
+                'about_who_am_i_text': "I'm a student, well, at least for now; I'm also an AI fanatic, striving to find my footing in this industrial revolution; and I'm a Coder, though most of my work is Vibe Coding, the results have far exceeded my abilities, so, I'm quite satisfied, hmm.",
+                'about_why_site_title': "Why this personal website?",
+                'about_why_site_text': "Please see <a href='post-why-website.html'>'Why Build This Personal Website?'</a>. Note that after deploying to the server, that project address was temporarily used for MaxCaulfield.xyz, but I'll change it back.",
+                'about_why_site_link_text': "'Why Build This Personal Website?'",
+                'about_dream_title': "What's your dream?",
+                'about_dream_text': "For conscience!... *slap*. My bad, it's enough to just shine my own light.",
+                'about_why_max_title': "Why MaxCaulfield?",
+                'about_why_max_text': "The name MaxCaulfield comes from the game <a href='https://store.steampowered.com/agecheck/app/319630/' target='_blank' rel='noopener noreferrer'>'Life is Strange'</a>. It's a very, very good game, and I thought the name sounded nice, so I started using it. Unexpectedly, it became synonymous with me.",
+                'about_lis_link_text': "'Life is Strange'",
+                'about_why_mqc_title': "Why Mai Qingchun?",
+                'about_why_mqc_text': "Because Max from MaxCaulfield sounds like 'Mai Ke Si'. During a competition in the winter break, I first used 'Mai Qingchun is very youthful' for a public account, thought it sounded super nice and beautiful, and have used it ever since.",
+                'about_why_blog_name_title': "Why is the blog called 'Max's Wheat Field'?",
+                'about_why_blog_name_text': "Please see below ↓",
+                'about_signature_title': "Do you have a personal signature?",
+                'about_signature_text': "Of course, and it's super cool!",
+                'about_contact_title': "How to contact me?",
+                'about_contact_text': "You can contact me via QQ Mail and BiliBili.",
+                'about_contact_email_prompt': "You can click the icons to contact me",
+                'about_thank_you_text': "Thank you so much for reading this far! I hope you enjoy this vibrant wheat field and find what you're looking for here. <span class=\"inline-block animate-bounce\">ヾ(๑╹◡╹)ﾉ\"</span>",
+                'about_come_back_text': "Don't forget to visit the wheat field often! ~(≧▽≦)/~",
+                'current_lang_display': "EN",
+                'back_to_home': "Back to Home",
+                'footer_icp_about': "Jing ICP License No. 2025127934" 
+            },
+            'zh-CN': {
+                'about_page_title': "关于我 - 麦青春的麦田",
+                'site_title_about_page': "麦青春的麦田",
+                'site_title_about_page_footer': "麦青春的麦田",
+                'about_heading': "关于麦青春",
+                'about_intro_greeting': "你好，我是MaxCaulfield，你也可以叫我麦青春。",
+                'about_intro_welcome': "欢迎来到我的个人blog——麦青春的麦田",
+                'about_who_am_i_title': "我是谁？",
+                'about_who_am_i_text': "我是一个学生，嗯，起码现在还是；我还是个AI狂热教徒，力求在工业革命中站稳脚跟；我还↑是↓个Coder，虽然绝大多数工作都是Vibe Coding但是成果已经远大于我的能力了，所以，还算满意，嗯。",
+                'about_why_site_title': "为什么要做这个个人网站？",
+                'about_why_site_text': "请参见<a href='post-why-website.html'>《为什么要做这个个人网站》</a>，但是注意下上服务器之后那个项目地址被用来放MaxCaulfield.xyz了，但是这只是临时性的我会改回来的。",
+                'about_why_site_link_text': "《为什么要做这个个人网站》",
+                'about_dream_title': "梦想是什么？",
+                'about_dream_text': "为了良知！...*啪。我错了，能闪耀自己的光芒就可以了。",
+                'about_why_max_title': "为什么叫MaxCaulfield？",
+                'about_why_max_text': "MaxCaulfield这个名字来源于游戏<a href='https://store.steampowered.com/agecheck/app/319630/' target='_blank' rel='noopener noreferrer'>《Life is Strange 奇异人生》</a>，是个非常非常好的游戏，自己觉得也好听就拿来用了，没想到直接成了我的代名词。",
+                'about_lis_link_text': "《Life is Strange 奇异人生》",
+                'about_why_mqc_title': "为什么叫麦青春？",
+                'about_why_mqc_text': "因为MaxCaulfield的Max，麦克斯，然后在寒假参加比赛的时候写公众号首次用了麦青春很青春这个名字，觉得超级好听且美丽，就一直沿用了。",
+                'about_why_blog_name_title': "为什么博客叫麦青春的麦田？",
+                'about_why_blog_name_text': "请看↓",
+                'about_signature_title': "有没有个人签名？",
+                'about_signature_text': "那肯定有啊而且超好看的捏",
+                'about_contact_title': "怎么联系你？",
+                'about_contact_text': "你可以通过QQ邮箱和BiliBili联系主包。", 
+                'about_contact_email_prompt': "你可以点击图标进行联系", 
+                'about_thank_you_text': "能看到这里真是谢谢你呀，希望你能喜爱这片充满生机的麦田，愿你能在这片田地中得到你想要的内容捏。 <span class=\"inline-block animate-bounce\">ヾ(๑╹◡╹)ﾉ\"</span>",
+                'about_come_back_text': "别忘了多来麦田里看看啊啊啊啊啊 ~(≧▽≦)/~",
+                'current_lang_display': "简",
+                'back_to_home': "返回主页",
+                'footer_icp_about': "京ICP备2025127934号" 
+            },
+            'zh-TW': {
+                'about_page_title': "關於我 - 麥青春的麥田",
+                'site_title_about_page': "麥青春的麥田",
+                'site_title_about_page_footer': "麥青春的麥田",
+                'about_heading': "關於麥青春",
+                'about_intro_greeting': "你好，我是MaxCaulfield，你也可以叫我麥青春。",
+                'about_intro_welcome': "歡迎來到我的個人blog——麥青春的麥田",
+                'about_who_am_i_title': "我是誰？",
+                'about_who_am_i_text': "我是一個學生，嗯，起碼現在還是；我還是個AI狂熱教徒，力求在工業革命中站穩腳跟；我還↑是↓個Coder，雖然絕大多數工作都是Vibe Coding但是成果已經遠大於我的能力了，所以，還算滿意，嗯。",
+                'about_why_site_title': "為什麼要做這個個人網站？",
+                'about_why_site_text': "請參見<a href='post-why-website.html'>《為什麼要做这个個人網站》</a>，但是注意下上伺服器之後那個專案位址被用來放MaxCaulfield.xyz了，但是這只是臨時性的我會改回來的。",
+                'about_why_site_link_text': "《為什麼要做这个個人網站》",
+                'about_dream_title': "夢想是什麼？",
+                'about_dream_text': "為了良知！...*啪。我錯了，能閃耀自己的光芒就可以了。",
+                'about_why_max_title': "為什麼叫MaxCaulfield？",
+                'about_why_max_text': "MaxCaulfield這個名字來源於遊戲<a href='https://store.steampowered.com/agecheck/app/319630/' target='_blank' rel='noopener noreferrer'>《Life is Strange 奇異人生》</a>，是個非常非常好的遊戲，自己覺得也好聽就拿來用了，沒想到直接成了我的代名詞。",
+                'about_lis_link_text': "《Life is Strange 奇異人生》",
+                'about_why_mqc_title': "為什麼叫麥青春？",
+                'about_why_mqc_text': "因為MaxCaulfield的Max，麥克斯，然後在寒假參加比賽的時候寫公眾號首次用了麥青春很青春這個名字，覺得超級好聽且美麗，就一直沿用了。",
+                'about_why_blog_name_title': "為什麼部落格叫麥青春的麥田？",
+                'about_why_blog_name_text': "請看↓",
+                'about_signature_title': "有沒有個人簽名？",
+                'about_signature_text': "那肯定有啊而且超好看的捏",
+                'about_contact_title': "怎麼聯繫你？",
+                'about_contact_text': "你可以透過QQ信箱和BiliBili聯繫主包。", 
+                'about_contact_email_prompt': "你可以點擊圖示進行聯繫", 
+                'about_thank_you_text': "能看到這裡真是謝謝你呀，希望你能喜愛這片充滿生機的麥田，願你能在这片田地中得到你想要的內容捏。 <span class=\"inline-block animate-bounce\">ヾ(๑╹◡╹)ﾉ\"</span>",
+                'about_come_back_text': "別忘了多來麥田裡看看啊啊啊啊啊 ~(≧▽≦)/~",
+                'current_lang_display': "繁",
+                'back_to_home': "返回主頁",
+                'footer_icp_about': "京ICP備2025127934號" 
+            }
+        };
+
+        // --- Global DOM Elements & State ---
+        const themeToggle = document.getElementById('theme-toggle');
+        const langToggle = document.getElementById('lang-toggle');
+        const langDropdown = document.getElementById('lang-dropdown');
+        const currentLangSpan = document.getElementById('current-lang');
+        const header = document.getElementById('main-header'); 
+        
+        let currentLang = localStorage.getItem('language') || 'zh-CN';
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+
+        // --- Theme and Language Functions ---
+        function applyCurrentTheme() {
+            const sunIcon = themeToggle ? themeToggle.querySelector('.fa-sun') : null;
+            const moonIcon = themeToggle ? themeToggle.querySelector('.fa-moon') : null;
+            if (currentTheme === 'light') {
+                document.body.classList.add('light-theme'); document.body.classList.remove('dark-theme');
+                if (sunIcon) sunIcon.classList.add('hidden'); if (moonIcon) moonIcon.classList.remove('hidden');
+            } else {
+                document.body.classList.add('dark-theme'); document.body.classList.remove('light-theme');
+                if (sunIcon) sunIcon.classList.remove('hidden'); if (moonIcon) moonIcon.classList.add('hidden');
+            }
+        }
+
+        function applyCurrentTranslations() {
+            console.log("Applying translations for lang:", currentLang);
+            if (!translations[currentLang]) { console.warn(`Translations for language '${currentLang}' not found.`); return; }
+            document.documentElement.lang = currentLang.startsWith('zh') ? currentLang : currentLang.split('-')[0];
+            const elements = document.querySelectorAll('[data-translate-key]');
+            elements.forEach(el => {
+                const key = el.getAttribute('data-translate-key');
+                const translationText = translations[currentLang][key];
+                if (translationText !== undefined) {
+                    if (el.tagName === 'TITLE') { document.title = translationText; }
+                    else { el.innerHTML = translationText; } 
+                } else {
+                    console.warn(`Translation key "${key}" not found for language "${currentLang}"`);
+                }
+            });
+            if (currentLangSpan) {
+               currentLangSpan.textContent = (translations[currentLang] && translations[currentLang]['current_lang_display']) ? translations[currentLang]['current_lang_display'] : currentLang.split('-')[0].toUpperCase();
+            }
+            if (langDropdown) {
+                const langLinks = langDropdown.querySelectorAll('a[data-lang]');
+                langLinks.forEach(link => {
+                    link.classList.toggle('font-bold', link.getAttribute('data-lang') === currentLang);
+                    link.classList.toggle('text-[var(--text-accent)]', link.getAttribute('data-lang') === currentLang);
+                });
+            }
+        }
+        
+        function setupLangSwitcher(toggleButton, dropdownMenu) { 
+            if (!toggleButton || !dropdownMenu) return;
+            const links = dropdownMenu.querySelectorAll('a[data-lang]');
+            if (!links || links.length === 0) return;
+            toggleButton.addEventListener('click', (e) => { e.stopPropagation(); dropdownMenu.classList.toggle('hidden'); });
+            links.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const selectedLang = link.getAttribute('data-lang');
+                    if (selectedLang !== currentLang) {
+                        currentLang = selectedLang;
+                        localStorage.setItem('language', currentLang);
+                        applyCurrentTranslations();
+                    }
+                    dropdownMenu.classList.add('hidden');
+                });
+            });
+        }
+
+        // --- Header Scroll Effect ---
+        if (header) {
+            window.addEventListener('scroll', () => { 
+                header.classList.toggle('scrolled', window.scrollY > 30);
+            });
+        }
+        
+        // --- DOMContentLoaded Listener ---
+        document.addEventListener('DOMContentLoaded', () => {
+            const currentYearEl = document.getElementById('current-year');
+            if (currentYearEl) {
+                currentYearEl.textContent = new Date().getFullYear();
+            }
+
+            if (themeToggle) {
+                applyCurrentTheme();
+                themeToggle.addEventListener('click', () => {
+                    currentTheme = document.body.classList.contains('light-theme') ? 'dark' : 'light';
+                    localStorage.setItem('theme', currentTheme);
+                    applyCurrentTheme();
+                });
+            }
+
+            applyCurrentTranslations(); 
+            if (langToggle && langDropdown) {
+                setupLangSwitcher(langToggle, langDropdown);
+                document.addEventListener('click', (e) => { 
+                    if (!langToggle.contains(e.target) && !langDropdown.contains(e.target)) {
+                        langDropdown.classList.add('hidden');
+                    }
+                });
+            }
+
+            // tsParticles Initialization for About Page - Lines only
+            if (typeof tsParticles !== 'undefined') {
+                tsParticles.load("tsparticles-about", {
+                    fpsLimit: 60,
+                    particles: { 
+                        number: { value: 35, density: { enable: true, area: 800 } }, 
+                        color: { value: ["#FFFFFF", "#ADD8E6", "#F0F8FF"] }, 
+                        shape: { type: "circle" }, 
+                        opacity: { value: { min: 0.1, max: 0.4 }, animation: { enable: true, speed: 1, minimumValue: 0.1, sync: false } }, 
+                        size: { value: { min: 1, max: 3 } }, 
+                        links: { color: "#ffffff", distance: 150, enable: true, opacity: 0.15, width: 1 }, 
+                        collisions: { enable: false }, 
+                        move: { direction: "none", enable: true, outModes: { default: "out" }, random: true, speed: 0.4, straight: false } 
+                    },
+                    interactivity: { 
+                        events: { onHover: { enable: true, mode: "repulse" }, onClick: { enable: true, mode: "push" }, resize: true }, 
+                        modes: { repulse: { distance: 80, duration: 0.4 }, push: { quantity: 3 } } 
+                    },
+                    detectRetina: true,
+                    background: { opacity: 0 }
+                }).catch(error => { console.error("Error loading tsParticles for About page:", error); });
+            } else { console.warn("tsParticles library not found for About page."); }
+        });
+    </script>
+</body>
+</html>
