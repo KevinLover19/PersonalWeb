@@ -94,3 +94,24 @@
 本项目采用 [MIT](LICENSE) 许可证。 (This project is licensed under the MIT License.)
 
 *(如果你还没有 LICENSE 文件，可以考虑添加一个。MIT 是一个常用的宽松许可证。)* *(If you don't have a LICENSE file yet, consider adding one. MIT is a common permissive license.)*
+
+## 后端功能 (Backend Features)
+
+新增 PHP 示例，包括:
+- `blog.php` 和 `post.php` 用于显示文章
+- 评论系统
+- `admin/` 目录下的登录及发布管理界面
+
+`setup.sql` 提供数据库结构示例，供首次使用前初始化。
+
+## 部署到服务器 (Deploying to Server)
+1. 在宝塔面板中创建站点并安装 LNMP (Nginx、MySQL、PHP)。
+2. 将仓库文件上传到站点目录，例如 `/www/wwwroot/MaxCaulfield.cn`。
+3. 通过 phpMyAdmin 导入 `setup.sql` 并初始化管理员账号：
+   ```sql
+   INSERT INTO admins (username, password_hash) VALUES ('admin', '<密码哈希>');
+   ```
+   密码哈希可通过命令 `php -r "echo password_hash('yourpass', PASSWORD_DEFAULT);"` 生成。
+4. 修改 `config.php` 中的数据库连接信息。
+5. 访问 `admin/login.php` 登录后台，发布文章后可在 `blog.php` 查看。
+
