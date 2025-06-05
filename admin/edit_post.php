@@ -1,11 +1,12 @@
 <?php
 // /www/wwwroot/maxcaulfield.cn/admin/new_post.php
-// (Canvas filename: new_post_v7.php)
+// (Canvas filename: new_post_v5.php)
 
+// Enable detailed error reporting for debugging (REMOVE OR COMMENT OUT IN PRODUCTION)
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once __DIR__ . '/../db.php'; // Assumes db.php is in /www/wwwroot/maxcaulfield.cn/
+require_once __DIR__ . '/../db.php'; 
 
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
@@ -18,19 +19,21 @@ if (!isset($_SESSION['admin_id'])) {
 
 $pdo = getPDO();
 if (!$pdo) {
+    // Log this error for the admin, and show a user-friendly message.
     error_log("FATAL ERROR: Database connection could not be established in new_post.php.");
-    die("数据库连接失败。请检查配置或联系管理员。错误代码: NP_DB_INIT_FAIL");
+    die("数据库连接失败。请检查配置或联系管理员。");
 }
 $message = '';
 $message_type = ''; 
 $admin_id = $_SESSION['admin_id'];
 
 $cover_upload_dir_relative = '/uploads/post_covers/'; 
-$cover_upload_path_absolute = dirname(__DIR__) . $cover_upload_dir_relative; // Corrected base for absolute path
+$cover_upload_path_absolute = __DIR__ . '/..' . $cover_upload_dir_relative; 
 
+// Check and create upload directory
 if (!file_exists($cover_upload_path_absolute)) {
-    if (!mkdir($cover_upload_path_absolute, 0775, true)) {
-        $message .= (empty($message) ? '' : '<br>') . "严重警告：无法自动创建封面图片上传目录: " . htmlspecialchars($cover_upload_path_absolute) . "。请手动创建并设置正确的写入权限。";
+    if (!mkdir($cover_upload_path_absolute, 0775, true)) { // Attempt to create recursively
+        $message .= (empty($message) ? '' : '<br>') . "严重警告：无法自动创建封面图片上传目录: " . htmlspecialchars($cover_upload_path_absolute) . "。请手动在网站根目录下创建 'uploads/post_covers/' 并设置正确的写入权限。";
         if(empty($message_type)) $message_type = 'error';
     }
 } elseif (!is_writable($cover_upload_path_absolute)) {
@@ -38,6 +41,7 @@ if (!file_exists($cover_upload_path_absolute)) {
      if(empty($message_type)) $message_type = 'error';
 }
 
+// Initialize form variables for repopulation on error or for sticky form
 $form_title = $_POST['title'] ?? '';
 $form_content_for_textarea = $_POST['content'] ?? ''; 
 $form_category_id = $_POST['category_id'] ?? null;
@@ -51,9 +55,8 @@ try {
      if ($stmt_categories_fetch_new) {
         $categories_for_form = $stmt_categories_fetch_new->fetchAll(PDO::FETCH_ASSOC);
     } else {
-        $pdo_error_cat = $pdo->errorInfo();
-        error_log("Categories query failed to return object in new_post.php. PDO Error: " . ($pdo_error_cat[2] ?? "Unknown error"));
-        throw new PDOException("分类查询未能返回结果对象。");
+        // This case might indicate a problem with the PDO connection itself or a more fundamental query issue
+        throw new PDOException("分类查询未能返回结果对象。 PDO Error: " . implode(":", $pdo->errorInfo()));
     }
 } catch (PDOException $e) {
     $message .= (empty($message) ? '' : '<br>') . "获取分类失败: " . $e->getMessage();
@@ -62,21 +65,16 @@ try {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Re-assign from POST for processing, $form_ variables are for re-display
     $title = trim($_POST['title'] ?? '');
     $content_from_editor = $_POST['content'] ?? ''; 
     $category_id = !empty($_POST['category_id']) ? intval($_POST['category_id']) : null;
     $status = trim($_POST['status'] ?? 'draft');
     $tags_input = trim($_POST['tags'] ?? '');
     $cover_image_url_text_input = trim($_POST['cover_image_url_text'] ?? '');
-    $final_cover_image_url = '';
+    $final_cover_image_url = ''; // This will hold the path to be saved
 
-    $form_title = $title; // Repopulate for sticky form
-    $form_content_for_textarea = $content_from_editor;
-    $form_category_id = $category_id;
-    $form_status = $status;
-    $form_tags_input = $tags_input;
-    $form_cover_image_url_text = $cover_image_url_text_input;
-
+    // Basic validation
     if (empty($title)) {
         $message = '文章标题不能为空。';
         $message_type = 'error';
@@ -84,19 +82,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $message = '文章内容不能为空。';
         $message_type = 'error';
     } 
-    
-    if (empty($message_type)) { // Proceed if basic validation passes
+    // Only proceed if basic validation passes
+    if (empty($message_type)) {
+        // Handle Cover Image File Upload
         if (isset($_FILES['cover_image_file']) && $_FILES['cover_image_file']['error'] == UPLOAD_ERR_OK) {
-             if (!is_writable($cover_upload_path_absolute)) { 
+             if (!is_writable($cover_upload_path_absolute)) { // Double-check writability at point of use
                  $message = '封面上传目录不可写，无法保存图片。请检查路径: ' . htmlspecialchars($cover_upload_path_absolute);
                  $message_type = 'error';
             } else {
-                // File upload validation (same as before)
                 $allowed_mime_types = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];
                 $file_tmp_name = $_FILES['cover_image_file']['tmp_name'];
-                $file_mime_type = mime_content_type($file_tmp_name);
+                $file_mime_type = mime_content_type($file_tmp_name); // Get MIME type of the uploaded file
                 $file_size = $_FILES['cover_image_file']['size'];
-                $max_size = 5 * 1024 * 1024; 
+                $max_size = 5 * 1024 * 1024; // 5MB
 
                 if (!in_array($file_mime_type, $allowed_mime_types)) {
                     $message = '无效的封面图片类型。检测到的类型: ' . htmlspecialchars($file_mime_type) . '。请上传 JPEG, PNG, GIF, 或 WEBP 格式。';
@@ -111,7 +109,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     $destination_path = $cover_upload_path_absolute . $unique_filename;
 
                     if (move_uploaded_file($file_tmp_name, $destination_path)) {
-                        $final_cover_image_url = $cover_upload_dir_relative . $unique_filename; 
+                        $final_cover_image_url = $cover_upload_dir_relative . $unique_filename; // Relative path for DB
                     } else {
                         $php_err_msg = error_get_last()['message'] ?? '未知错误';
                         $message = '移动上传的封面图片失败。请检查服务器权限和路径。PHP 错误: ' . htmlspecialchars($php_err_msg);
@@ -120,7 +118,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     }
                 }
             }
-        } elseif (!empty($cover_image_url_text_input)) {
+        } elseif (!empty($cover_image_url_text_input)) { // If no file uploaded, check text URL input
             if (filter_var($cover_image_url_text_input, FILTER_VALIDATE_URL)) {
                 $final_cover_image_url = $cover_image_url_text_input;
             } else {
@@ -129,18 +127,21 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             }
         }
 
-        if (empty($message_type)) { // If no errors from file/URL handling
+        // If no errors so far (from validation or file upload), proceed to database insert
+        if (empty($message_type)) {
             try {
                 $sql_insert_post = "INSERT INTO posts (admin_id, title, content, category_id, tags, status, cover_image_url, created_at, updated_at) 
                         VALUES (:admin_id, :title, :content, :category_id, :tags, :status, :cover_image_url, NOW(), NOW())";
                 $stmt_insert_post = $pdo->prepare($sql_insert_post);
                 
                 if (!$stmt_insert_post) {
+                    // Log detailed error and throw exception
                     $pdo_error_info = $pdo->errorInfo();
                     error_log("Prepare failed for new post insert: " . ($pdo_error_info[2] ?? 'Unknown PDO error'));
                     throw new PDOException("数据库预处理语句失败 (创建文章)。");
                 }
                 
+                // Bind parameters
                 $stmt_insert_post->bindParam(':admin_id', $admin_id, PDO::PARAM_INT);
                 $stmt_insert_post->bindParam(':title', $title, PDO::PARAM_STR);
                 $stmt_insert_post->bindParam(':content', $content_from_editor, PDO::PARAM_STR);
@@ -152,20 +153,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 if ($stmt_insert_post->execute()) {
                     $new_post_id = $pdo->lastInsertId();
                     $_SESSION['success_message'] = "新文章已成功创建！ 文章 ID: " . $new_post_id . " <a href='edit_post.php?id=".$new_post_id."' class='font-semibold underline hover:text-green-800'>立即编辑</a>";
-                    
-                    // DEBUG: Check if this line is reached before redirect
-                    // error_log("About to redirect from new_post.php. Target: new_post.php"); 
-
-                    header('Location: new_post.php'); // Redirect to the same page (server name)
+                    // Redirect to the SAME new_post.php page (server name) to show the success message
+                    // The form fields will be cleared by the logic below the POST block if success_message is set.
+                    header('Location: new_post.php'); 
                     exit;
 
                 } else {
+                    // Log detailed error and set user message
                     $stmt_error_info = $stmt_insert_post->errorInfo();
                     error_log("Error creating post (execute failed): " . ($stmt_error_info[2] ?? 'Unknown statement execution error'));
                     $message = "创建文章失败，请重试 (数据库执行错误)。";
                     $message_type = 'error';
                 }
             } catch (PDOException $e) {
+                // Log detailed error and set user message
                 error_log("PDOException during new post insertion: " . $e->getMessage());
                 $message = "数据库错误 (创建文章时): " . $e->getMessage();
                 $message_type = 'error';
@@ -174,28 +175,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 }
 
+// If redirected from successful save, show session message
 if(isset($_SESSION['success_message'])){
-    $message = $_SESSION['success_message']; 
+    $message = $_SESSION['success_message']; // This can contain HTML for the link
     $message_type = 'success';
     unset($_SESSION['success_message']);
-    
+    // Clear form fields for the next new post entry
     $form_title = ''; 
     $form_content_for_textarea = ''; 
     $form_category_id = null; 
     $form_status = 'draft'; 
     $form_tags_input = ''; 
     $form_cover_image_url_text = '';
+    // Add JS to clear TinyMCE and file input if possible
     echo '<script>
-        document.addEventListener("DOMContentLoaded", function() {
-            if(typeof tinymce !== "undefined" && tinymce.get("content")) { tinymce.get("content").setContent("");}
-            const titleElem = document.getElementById("title"); if(titleElem) titleElem.value = "";
-            const tagsElem = document.getElementById("tags"); if(tagsElem) tagsElem.value = "";
-            const catElem = document.getElementById("category_id"); if(catElem) catElem.value = "";
-            const statusElem = document.getElementById("status"); if(statusElem) statusElem.value = "draft";
-            const coverFileElem = document.getElementById("cover_image_file"); if(coverFileElem) coverFileElem.value = "";
-            const coverUrlElem = document.getElementById("cover_image_url_text"); if(coverUrlElem) coverUrlElem.value = "";
-            const coverPreviewElem = document.getElementById("cover_image_preview_element"); if(coverPreviewElem) { coverPreviewElem.style.display="none"; coverPreviewElem.src="#"; }
-        });
+        if(typeof tinymce !== "undefined" && tinymce.get("content")) { tinymce.get("content").setContent(""); tinymce.triggerSave(); }
+        const coverFileElem = document.getElementById("cover_image_file"); if(coverFileElem) coverFileElem.value = "";
+        const coverPreviewElem = document.getElementById("cover_image_preview_element"); if(coverPreviewElem) { coverPreviewElem.style.display="none"; coverPreviewElem.src="#"; }
     </script>';
 }
 
@@ -259,13 +255,12 @@ $page_title_display = "撰写新文章";
                 autosave_ask_before_unload: true, autosave_interval: '30s',
                 autosave_prefix: 'tinymce-autosave-new-post-{path}{query}-{id}-',
                 autosave_restore_when_empty: true, autosave_retention: '2m',
-                setup: function (editor) { 
+                setup: function (editor) { // For new_post.php, ensure editor gets repopulated content on server-side error
                     editor.on('init', function () {
                         const initialContentForEditor = <?php echo json_encode($form_content_for_textarea); ?>;
-                        // Only set content if editor is currently empty and PHP provided repopulation data (e.g. on validation error)
-                        // This avoids overwriting content restored by TinyMCE's own autosave if PHP content is empty 
-                        // (like after a successful save & redirect, where PHP variables are cleared)
-                        if (initialContentForEditor && editor.getContent({format: 'text'}).trim() === '' && initialContentForEditor.trim() !== '') {
+                        // Only set content if editor is currently empty and PHP provided repopulation data
+                        // This avoids overwriting content restored by TinyMCE's own autosave if PHP content is empty (e.g. after successful save & redirect)
+                        if (initialContentForEditor && editor.getContent({format: 'text'}).trim() === '') {
                             editor.setContent(initialContentForEditor);
                         }
                     });
@@ -309,7 +304,7 @@ $page_title_display = "撰写新文章";
             }
             
             const initialTextUrl = <?php echo json_encode($form_cover_image_url_text); ?>;
-            if(initialTextUrl && coverImageUrlTextInput && coverImageUrlTextInput.value.trim() !== ''){
+            if(initialTextUrl && coverImageUrlTextInput && coverImageUrlTextInput.value.trim() !== ''){ // Check against current value
                 displayPreview(initialTextUrl);
             }
         });
@@ -321,9 +316,9 @@ $page_title_display = "撰写新文章";
             <h1 class="text-xl font-semibold">后台管理</h1>
             <nav class="admin-nav">
                 <a href="dashboard.php">仪表盘</a>
-                <a href="new_post.php" class="active">撰写新文章</a>
+                <a href="new_post.php" class="active">撰写新文章</a> <!-- Corrected Link -->
                 <a href="posts_list.php">文章列表</a> 
-                <a href="categories.php">分类管理</a>
+                <a href="categories.php">分类管理</a> <!-- Corrected Link -->
                 <a href="users.php">用户管理</a>
                 <a href="logout.php">登出</a>
             </nav>
@@ -336,11 +331,11 @@ $page_title_display = "撰写新文章";
 
             <?php if (!empty($message)): ?>
             <div class="mb-6 p-4 rounded-md <?php echo $message_type === 'error' ? 'bg-red-100 border-l-4 border-red-500 text-red-700' : 'bg-green-100 border-l-4 border-green-500 text-green-700'; ?>" role="alert">
-                <p><?php echo $message; // Allow HTML for edit link in success message ?></p>
+                <p><?php echo $message; ?></p>
             </div>
             <?php endif; ?>
 
-            <form method="POST" action="new_post.php" enctype="multipart/form-data" class="space-y-6">
+            <form method="POST" action="new_post.php" enctype="multipart/form-data" class="space-y-6"> <!-- Corrected Action -->
                 <div>
                     <label for="title" class="form-label">标题 <span class="text-red-500">*</span></label>
                     <input type="text" id="title" name="title" class="form-input" placeholder="请输入文章标题" value="<?php echo htmlspecialchars($form_title); ?>" required>
@@ -374,6 +369,9 @@ $page_title_display = "撰写新文章";
                         <select id="category_id" name="category_id" class="form-select">
                             <option value="">选择分类 (可选)</option>
                             <?php 
+                            // This check can be simplified or removed if $categories_for_form handles empty case well
+                            // $has_categories_check_query_new_form = $pdo->query("SELECT 1 FROM categories LIMIT 1");
+                            // $has_categories_check_new_form = $has_categories_check_query_new_form ? $has_categories_check_query_new_form->fetch() : false;
                             if (empty($categories_for_form)): 
                             ?>
                                 <option value="" disabled>暂无分类 (请先前往“分类管理”创建)</option>
