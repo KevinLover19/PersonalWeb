@@ -19,12 +19,15 @@ $posts = $pdo->query('SELECT id, title, created_at FROM posts ORDER BY created_a
 <body class="p-6">
 <h1 class="text-2xl mb-4">Dashboard</h1>
 <a href="new_post.php" class="text-blue-600">Create New Post</a> |
+<a href="view_passwords.php" class="text-blue-600">View Passwords</a> |
 <a href="logout.php" class="text-red-600">Logout</a>
 <ul class="mt-4">
 <?php foreach ($posts as $post): ?>
 <li class="mb-2">
 <?php echo htmlspecialchars($post['title']); ?> -
 <a class="text-blue-600" href="../post.php?id=<?php echo $post['id']; ?>">View</a>
+|
+<a class="text-green-600" href="edit_post.php?id=<?php echo $post['id']; ?>">Edit</a>
 </li>
 <?php endforeach; ?>
 </ul>

@@ -105,13 +105,17 @@
 `setup.sql` 提供数据库结构示例，供首次使用前初始化。
 
 ## 部署到服务器 (Deploying to Server)
-1. 在宝塔面板中创建站点并安装 LNMP (Nginx、MySQL、PHP)。
+1. 在宝塔面板中创建站点并安装 LNMP (Nginx、MySQL、PHP)。安装 PHP 时务必勾选 `fileinfo` 扩展，否则发布带图片的文章会报 `mime_content_type` 错误。
 2. 将仓库文件上传到站点目录，例如 `/www/wwwroot/MaxCaulfield.cn`。
-3. 通过 phpMyAdmin 导入 `setup.sql` 并初始化管理员账号：
+3. 登录 phpMyAdmin，创建数据库 `max_blog`，然后导入 `setup.sql`：
    ```sql
    INSERT INTO admins (username, password_hash) VALUES ('admin', '<密码哈希>');
    ```
-   密码哈希可通过命令 `php -r "echo password_hash('yourpass', PASSWORD_DEFAULT);"` 生成。
-4. 修改 `config.php` 中的数据库连接信息。
-5. 访问 `admin/login.php` 登录后台，发布文章后可在 `blog.php` 查看。
+   其中 `<密码哈希>` 需要在命令行运行：
+   `php -r "echo password_hash('yourpass', PASSWORD_DEFAULT);"`
+   将生成的字符串填入上面的 SQL 中。
+4. 编辑 `config.php`，填入实际的数据库主机、用户名、密码等信息。
+5. 通过浏览器访问 `admin/login.php`，使用上面创建的账号登录后台。
+6. 在后台可发布文章、编辑文章以及查看密码列表。
+7. 文章发布后在 `blog.php` 查看，点击标题进入 `post.php` 阅读并发表评论、回复或点赞。
 
